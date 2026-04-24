@@ -1,9 +1,10 @@
 import { Server } from "socket.io";
 
 export const initializeSocket = (server, config) => {
+  const allowedOrigins = config.clientUrls || [config.clientUrl];
   const io = new Server(server, {
     cors: {
-      origin: config.clientUrl,
+      origin: allowedOrigins,
       credentials: true,
     },
   });

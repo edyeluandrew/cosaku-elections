@@ -1,0 +1,18 @@
+# Root-level ignores
+node_modules/
+.DS_Store
+*.log
+
+# Env (per-folder also ignored, this is a safety net)
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/

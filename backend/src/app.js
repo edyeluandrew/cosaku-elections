@@ -13,8 +13,14 @@ import electionRoutes from "./routes/election.routes.js";
 const app = express();
 
 // Middleware
+const allowedOrigins = config.clientUrls || [config.clientUrl];
 app.use(cors({
-  origin: config.clientUrl,
+  origin: (origin, cb) => {
+    // Allow no-origin requests (curl, mobile apps, server-to-server)
+    if (!origin) return cb(null, true);
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    return cb(new Error(`CORS: origin ${origin} not allowed`));
+  },
   credentials: true,
 }));
 
