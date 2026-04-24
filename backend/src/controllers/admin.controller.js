@@ -1,4 +1,5 @@
 import { query } from "../config/db.js";
+import { broadcastResults } from "../utils/broadcastResults.js";
 
 // Admin Dashboard
 export const getDashboard = async (req, res) => {
@@ -328,6 +329,11 @@ export const editVote = async (req, res) => {
           reason: reason,
         }),
       ]
+    );
+
+    // Broadcast updated results in real-time
+    broadcastResults(vote.election_id).catch((e) =>
+      console.error("Broadcast after editVote failed:", e)
     );
 
     res.json({

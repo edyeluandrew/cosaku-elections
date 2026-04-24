@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import VoterLayout from "../layouts/VoterLayout";
 import resultsService from "../utils/resultsService";
 import voteService from "../utils/voteService";
+import electionService from "../utils/electionService";
 
 const VoterDashboard = () => {
   const navigate = useNavigate();
@@ -10,13 +11,12 @@ const VoterDashboard = () => {
   const [myVotes, setMyVotes] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const electionId = "YOUR_ELECTION_ID"; // This should come from context/state in production
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Get my votes
-        const votesResponse = await voteService.getMyVotes(electionId);
+        const el = await electionService.getActive();
+        setElection(el);
+        const votesResponse = await voteService.getMyVotes(el.id);
         setMyVotes(votesResponse.votes || []);
       } catch (error) {
         console.error("Failed to load data:", error);

@@ -11,6 +11,8 @@ import VerifyEmail from "./pages/VerifyEmail";
 // Voter Pages
 import VoterDashboard from "./pages/VoterDashboard";
 import VotingPage from "./pages/VotingPage";
+import VoteReview from "./pages/VoteReview";
+import VoteSuccess from "./pages/VoteSuccess";
 import ResultsPage from "./pages/ResultsPage";
 
 // Admin Pages
@@ -50,6 +52,22 @@ function App() {
           element={
             <ProtectedRoute requiredRole="voter">
               <VotingPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/vote/review"
+          element={
+            <ProtectedRoute requiredRole="voter">
+              <VoteReview />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/vote/success"
+          element={
+            <ProtectedRoute requiredRole="voter">
+              <VoteSuccess />
             </ProtectedRoute>
           }
         />

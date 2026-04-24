@@ -1,4 +1,5 @@
 import { query } from "../config/db.js";
+import { broadcastResults } from "../utils/broadcastResults.js";
 
 export const submitVote = async (req, res) => {
   try {
@@ -80,6 +81,11 @@ export const submitVote = async (req, res) => {
           candidateId: candidateId,
         }),
       ]
+    );
+
+    // Broadcast updated results to everyone watching this election
+    broadcastResults(electionId).catch((e) =>
+      console.error("Broadcast after submitVote failed:", e)
     );
 
     res.status(201).json({

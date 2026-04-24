@@ -3,20 +3,30 @@ import VoterLayout from "../layouts/VoterLayout";
 import PositionSection from "../components/PositionSection";
 import ResultChart from "../components/ResultChart";
 import resultsService from "../utils/resultsService";
+import electionService from "../utils/electionService";
 import socket from "../sockets/socket";
 
 const ResultsPage = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chartType, setChartType] = useState("bar");
-
-  const electionId = "YOUR_ELECTION_ID"; // This should come from context/state
+  const [electionId, setElectionId] = useState(null);
 
   useEffect(() => {
-    const fetchResults = async () => {
+    let currentId = null;
+    const init = async () => {
       try {
-        const response = await resultsService.getLiveResults(electionId);
+        const el = await electionService.getActive();
+        currentId = el.id;
+        setElectionId(el.id);
+        const response = await resultsService.getLiveResults(el.id);
         setResults(response.results || []);
+        socket.emit("join_election", el.id);
+        socket.on("results:update", (data) => {
+          if (data.electionId === el.id) {
+            setResults(data.results || []);
+          }
+        });
       } catch (error) {
         console.error("Failed to load results:", error);
       } finally {
@@ -24,20 +34,10 @@ const ResultsPage = () => {
       }
     };
 
-    fetchResults();
-
-    // Join election room for real-time updates
-    socket.emit("join_election", electionId);
-
-    // Listen for results updates
-    socket.on("results:update", (data) => {
-      if (data.electionId === electionId) {
-        setResults(data.results || []);
-      }
-    });
+    init();
 
     return () => {
-      socket.emit("leave_election", electionId);
+      if (currentId) socket.emit("leave_election", currentId);
       socket.off("results:update");
     };
   }, []);
