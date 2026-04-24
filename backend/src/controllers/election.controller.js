@@ -4,7 +4,7 @@ import { query } from "../config/db.js";
 export const getActiveElection = async (req, res) => {
   try {
     const result = await query(
-      `SELECT id, title, description, status, start_time, end_time, results_published
+      `SELECT id, title, status, start_time, end_time, results_published
        FROM elections
        ORDER BY 
          CASE status
@@ -33,7 +33,7 @@ export const getActiveElection = async (req, res) => {
 export const listElections = async (req, res) => {
   try {
     const result = await query(
-      `SELECT id, title, description, status, start_time, end_time, results_published, created_at
+      `SELECT id, title, status, start_time, end_time, results_published, created_at
        FROM elections
        ORDER BY created_at DESC`
     );
