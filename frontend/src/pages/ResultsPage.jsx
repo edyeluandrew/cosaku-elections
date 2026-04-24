@@ -1,0 +1,143 @@
+import React, { useEffect, useState } from "react";
+import VoterLayout from "../layouts/VoterLayout";
+import PositionSection from "../components/PositionSection";
+import ResultChart from "../components/ResultChart";
+import resultsService from "../utils/resultsService";
+import socket from "../sockets/socket";
+
+const ResultsPage = () => {
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [chartType, setChartType] = useState("bar");
+
+  const electionId = "YOUR_ELECTION_ID"; // This should come from context/state
+
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        const response = await resultsService.getLiveResults(electionId);
+        setResults(response.results || []);
+      } catch (error) {
+        console.error("Failed to load results:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResults();
+
+    // Join election room for real-time updates
+    socket.emit("join_election", electionId);
+
+    // Listen for results updates
+    socket.on("results:update", (data) => {
+      if (data.electionId === electionId) {
+        setResults(data.results || []);
+      }
+    });
+
+    return () => {
+      socket.emit("leave_election", electionId);
+      socket.off("results:update");
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <VoterLayout>
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading results...</p>
+        </div>
+      </VoterLayout>
+    );
+  }
+
+  return (
+    <VoterLayout>
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow p-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-navy-900 mb-2">
+              Election Results
+            </h1>
+            <p className="text-gray-600">Live results are updating in real-time</p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setChartType("bar")}
+              className={`px-4 py-2 rounded font-semibold transition ${
+                chartType === "bar"
+                  ? "bg-yellow-500 text-navy-900"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Bar Chart
+            </button>
+            <button
+              onClick={() => setChartType("pie")}
+              className={`px-4 py-2 rounded font-semibold transition ${
+                chartType === "pie"
+                  ? "bg-yellow-500 text-navy-900"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Pie Chart
+            </button>
+          </div>
+        </div>
+
+        {/* Results */}
+        {results.map((position) => (
+          <div key={position.id} className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-2xl font-bold text-navy-900 mb-6">
+              {position.name}
+            </h2>
+
+            {/* Chart */}
+            <div className="mb-8 bg-gray-50 p-4 rounded-lg">
+              <ResultChart position={position} type={chartType} />
+            </div>
+
+            {/* Results Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b-2 border-gray-200">
+                    <th className="text-left py-3 px-4 font-semibold text-navy-900">
+                      Candidate
+                    </th>
+                    <th className="text-right py-3 px-4 font-semibold text-navy-900">
+                      Votes
+                    </th>
+                    <th className="text-right py-3 px-4 font-semibold text-navy-900">
+                      Percentage
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {position.candidates.map((candidate) => (
+                    <tr key={candidate.id} className="border-b border-gray-100">
+                      <td className="py-3 px-4">{candidate.name}</td>
+                      <td className="text-right py-3 px-4 font-semibold">
+                        {candidate.voteCount}
+                      </td>
+                      <td className="text-right py-3 px-4">
+                        <span className="text-yellow-600 font-semibold">
+                          {candidate.percentage}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </div>
+    </VoterLayout>
+  );
+};
+
+export default ResultsPage;
