@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { authService } from "../utils/authService";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,8 @@ const Login = () => {
     setLoading(true);
     try {
       await authService.login(formData.email, formData.password);
-      navigate("/voter/dashboard");
+      const redirectTo = location.state?.redirectTo || "/voter/dashboard";
+      navigate(redirectTo);
     } catch (error) {
       setServerError(error.response?.data?.error || "Login failed");
     } finally {

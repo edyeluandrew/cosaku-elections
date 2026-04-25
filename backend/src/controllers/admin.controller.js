@@ -10,11 +10,16 @@ export const getDashboard = async (req, res) => {
       return res.status(400).json({ error: "Election ID required" });
     }
 
+    const parsedElectionId = Number(electionId);
+    if (!Number.isInteger(parsedElectionId) || parsedElectionId <= 0) {
+      return res.status(400).json({ error: "Invalid election ID" });
+    }
+
     // Get election info
     const electionResult = await query(
       `SELECT id, title, status, start_time, end_time, results_published 
        FROM elections WHERE id = $1`,
-      [electionId]
+      [parsedElectionId]
     );
 
     if (electionResult.rows.length === 0) {

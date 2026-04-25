@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../layouts/AdminLayout";
 import adminService from "../utils/adminService";
+import electionService from "../utils/electionService";
 
 const AdminDashboard = () => {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const electionId = "YOUR_ELECTION_ID"; // This should come from context/state
+  const [error, setError] = useState("");
+  const [electionId, setElectionId] = useState(null);
 
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const response = await adminService.getDashboard(electionId);
+        const activeElection = await electionService.getActive();
+        if (!activeElection?.id) {
+          setError("No active election found.");
+          return;
+        }
+
+        setElectionId(activeElection.id);
+        const response = await adminService.getDashboard(activeElection.id);
         setDashboard(response);
       } catch (error) {
         console.error("Failed to load dashboard:", error);
+        setError(error.response?.data?.error || "Failed to load dashboard data");
       } finally {
         setLoading(false);
       }
@@ -29,6 +38,16 @@ const AdminDashboard = () => {
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminLayout>
+        <div className="bg-red-50 border border-red-200 text-red-700 p-6 rounded-lg">
+          {error}
         </div>
       </AdminLayout>
     );

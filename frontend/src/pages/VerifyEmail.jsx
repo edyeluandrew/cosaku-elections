@@ -23,9 +23,13 @@ const VerifyEmail = () => {
         const result = await authService.verifyEmail(token);
         setStatus("success");
         setMessage("Email verified successfully!");
-        
+
+        const isAuthenticated = authService.isAuthenticated();
+        const destination = isAuthenticated ? "/vote" : "/login";
+        const state = isAuthenticated ? undefined : { redirectTo: "/vote" };
+
         setTimeout(() => {
-          navigate("/login");
+          navigate(destination, { state });
         }, 2000);
       } catch (error) {
         setStatus("error");
@@ -54,7 +58,7 @@ const VerifyEmail = () => {
           <>
             <div className="text-green-500 text-5xl mb-4">✓</div>
             <p className="text-gray-700 mb-4">{message}</p>
-            <p className="text-sm text-gray-600">Redirecting to login...</p>
+            <p className="text-sm text-gray-600">Redirecting to voting page...</p>
           </>
         )}
 
