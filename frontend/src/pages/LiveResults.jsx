@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
-import AdminLayout from \"../layouts/AdminLayout\";
-import ResultChart from \"../components/ResultChart\";
-import resultsService from \"../utils/resultsService\";
-import electionService from \"../utils/electionService\";
-import socket from \"../sockets/socket\";
+import AdminLayout from "../layouts/AdminLayout";
+import ResultChart from "../components/ResultChart";
+import resultsService from "../utils/resultsService";
+import electionService from "../utils/electionService";
+import socket from "../sockets/socket";
 
 const LiveResults = () => {
   const [results, setResults] = useState([]);
