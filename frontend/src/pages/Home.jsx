@@ -10,10 +10,7 @@ const Home = () => {
           <h1 className="text-2xl font-bold text-yellow-500">COSAKU Votes</h1>
           <div className="flex gap-4">
             <Link to="/login" className="px-4 py-2 hover:text-yellow-500">
-              Voter Login
-            </Link>
-            <Link to="/admin/login" className="px-4 py-2 hover:text-yellow-500">
-              Admin Login
+              Login
             </Link>
           </div>
         </div>
@@ -26,18 +23,18 @@ const Home = () => {
           Real-time voting system for Computing Students Association of Kabale University
         </p>
 
-        <div className="flex gap-6 justify-center">
+        <div className="flex flex-col sm:flex-row gap-6 justify-center">
           <Link
             to="/register"
-            className="bg-yellow-500 text-navy-900 px-8 py-3 rounded-lg font-bold text-lg hover:bg-yellow-600 transition"
+            className="bg-yellow-500 text-navy-900 px-8 py-3 rounded-lg font-bold text-lg hover:bg-yellow-600 transition text-center"
           >
             Register to Vote
           </Link>
           <Link
             to="/login"
-            className="bg-transparent border-2 border-yellow-500 text-yellow-500 px-8 py-3 rounded-lg font-bold text-lg hover:bg-yellow-500 hover:text-navy-900 transition"
+            className="bg-transparent border-2 border-yellow-500 text-yellow-500 px-8 py-3 rounded-lg font-bold text-lg hover:bg-yellow-500 hover:text-navy-900 transition text-center"
           >
-            Sign In
+            Login
           </Link>
         </div>
       </div>

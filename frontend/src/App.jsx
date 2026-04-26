@@ -16,7 +16,6 @@ const VoteSuccess = React.lazy(() => import("./pages/VoteSuccess"));
 const ResultsPage = React.lazy(() => import("./pages/ResultsPage"));
 
 // Admin Pages - Lazy loaded
-const AdminLogin = React.lazy(() => import("./pages/AdminLogin"));
 const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
 const ManageCandidates = React.lazy(() => import("./pages/ManageCandidates"));
 const ManageVoters = React.lazy(() => import("./pages/ManageVoters"));
@@ -101,14 +100,7 @@ function App() {
         />
 
         {/* Admin Routes */}
-        <Route
-          path="/admin/login"
-          element={
-            <Suspense fallback={<LoadingFallback />}>
-              <AdminLogin />
-            </Suspense>
-          }
-        />
+        <Route path="/admin/login" element={<Navigate to="/login" replace />} />
         <Route
           path="/admin/dashboard"
           element={

@@ -32,9 +32,16 @@ const Login = () => {
 
     setLoading(true);
     try {
-      await authService.login(formData.email, formData.password);
-      const redirectTo = location.state?.redirectTo || "/voter/dashboard";
-      navigate(redirectTo);
+      const result = await authService.login(formData.email, formData.password);
+      const user = result.user;
+
+      // Auto-redirect based on user role
+      if (user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (user.role === "voter") {
+        const redirectTo = location.state?.redirectTo || "/voter/dashboard";
+        navigate(redirectTo);
+      }
     } catch (error) {
       setServerError(error.response?.data?.error || "Login failed");
     } finally {
@@ -48,7 +55,7 @@ const Login = () => {
         <h1 className="text-3xl font-bold text-navy-900 mb-2 text-center">
           COSAKU Votes
         </h1>
-        <p className="text-gray-600 text-center mb-8">Voter Login</p>
+        <p className="text-gray-600 text-center mb-8">Login</p>
 
         {serverError && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded">
