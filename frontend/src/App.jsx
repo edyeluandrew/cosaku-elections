@@ -1,32 +1,42 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 
-// Public Pages
+// Public Pages - Direct imports for fast initial load
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import VerifyEmail from "./pages/VerifyEmail";
 
-// Voter Pages
-import VoterDashboard from "./pages/VoterDashboard";
-import VotingPage from "./pages/VotingPage";
-import VoteReview from "./pages/VoteReview";
-import VoteSuccess from "./pages/VoteSuccess";
-import ResultsPage from "./pages/ResultsPage";
+// Voter Pages - Lazy loaded
+const VoterDashboard = React.lazy(() => import("./pages/VoterDashboard"));
+const VotingPage = React.lazy(() => import("./pages/VotingPage"));
+const VoteReview = React.lazy(() => import("./pages/VoteReview"));
+const VoteSuccess = React.lazy(() => import("./pages/VoteSuccess"));
+const ResultsPage = React.lazy(() => import("./pages/ResultsPage"));
 
-// Admin Pages
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
-import ManageCandidates from "./pages/ManageCandidates";
-import ManageVoters from "./pages/ManageVoters";
-import ManageVotes from "./pages/ManageVotes";
-import ElectionControl from "./pages/ElectionControl";
-import LiveResults from "./pages/LiveResults";
-import Reports from "./pages/Reports";
+// Admin Pages - Lazy loaded
+const AdminLogin = React.lazy(() => import("./pages/AdminLogin"));
+const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
+const ManageCandidates = React.lazy(() => import("./pages/ManageCandidates"));
+const ManageVoters = React.lazy(() => import("./pages/ManageVoters"));
+const ManageVotes = React.lazy(() => import("./pages/ManageVotes"));
+const ElectionControl = React.lazy(() => import("./pages/ElectionControl"));
+const LiveResults = React.lazy(() => import("./pages/LiveResults"));
+const Reports = React.lazy(() => import("./pages/Reports"));
 
 // Components
 import ProtectedRoute from "./components/ProtectedRoute";
+
+// Loading Fallback
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-navy-900 to-navy-800">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+      <p className="text-gray-300">Loading...</p>
+    </div>
+  </div>
+);
 
 function App() {
   return (
@@ -42,100 +52,131 @@ function App() {
         <Route
           path="/voter/dashboard"
           element={
-            <ProtectedRoute requiredRole="voter">
-              <VoterDashboard />
-            </ProtectedRoute>
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="voter">
+                <VoterDashboard />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/vote"
           element={
-            <ProtectedRoute requiredRole="voter">
-              <VotingPage />
-            </ProtectedRoute>
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="voter">
+                <VotingPage />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/vote/review"
           element={
-            <ProtectedRoute requiredRole="voter">
-              <VoteReview />
-            </ProtectedRoute>
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="voter">
+                <VoteReview />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/vote/success"
           element={
-            <ProtectedRoute requiredRole="voter">
-              <VoteSuccess />
-            </ProtectedRoute>
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="voter">
+                <VoteSuccess />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/results"
           element={
-            <ProtectedRoute requiredRole="voter">
-              <ResultsPage />
-            </ProtectedRoute>
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="voter">
+                <ResultsPage />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
 
         {/* Admin Routes */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/login"
+          element={
+            <Suspense fallback={<LoadingFallback />}>
+              <AdminLogin />
+            </Suspense>
+          }
+        />
         <Route
           path="/admin/dashboard"
           element={
-            <ProtectedRoute requiredRole="admin">
-              <AdminDashboard />
-            </ProtectedRoute>
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/admin/candidates"
           element={
-            <ProtectedRoute requiredRole="admin">
-              <ManageCandidates />
-            </ProtectedRoute>
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="admin">
+                <ManageCandidates />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/admin/voters"
           element={
-            <ProtectedRoute requiredRole="admin">
-              <ManageVoters />
-            </ProtectedRoute>
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="admin">
+                <ManageVoters />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/admin/votes"
           element={
-            <ProtectedRoute requiredRole="admin">
-              <ManageVotes />
-            </ProtectedRoute>
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="admin">
+                <ManageVotes />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/admin/election-control"
           element={
-            <ProtectedRoute requiredRole="admin">
-              <ElectionControl />
-            </ProtectedRoute>
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="admin">
+                <ElectionControl />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/admin/live-results"
           element={
-            <ProtectedRoute requiredRole="admin">
-              <LiveResults />
-            </ProtectedRoute>
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="admin">
+                <LiveResults />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/admin/reports"
           element={
-            <ProtectedRoute requiredRole="admin">
-              <Reports />
-            </ProtectedRoute>
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="admin">
+                <Reports />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
 

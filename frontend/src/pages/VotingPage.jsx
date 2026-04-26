@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import VoterLayout from "../layouts/VoterLayout";
 import PositionSection from "../components/PositionSection";
@@ -46,11 +46,11 @@ const VotingPage = () => {
     load();
   }, []);
 
-  const handleSelectCandidate = (positionId, candidate) => {
+  const handleSelectCandidate = useCallback((positionId, candidate) => {
     setSelectedCandidates((prev) => ({ ...prev, [positionId]: candidate }));
-  };
+  }, []);
 
-  const handleProceedToReview = () => {
+  const handleProceedToReview = useCallback(() => {
     if (!election) return;
     if (Object.keys(selectedCandidates).length !== positions.length) {
       setMessage("Please select a candidate for every position before proceeding.");
@@ -76,8 +76,8 @@ const VotingPage = () => {
         selections,
       })
     );
-    navigate("/vote/review");
-  };
+    navigate(\"/vote/review\");
+  }, [election, selectedCandidates, positions, navigate]);
 
   if (loading) {
     return (
@@ -92,17 +92,17 @@ const VotingPage = () => {
 
   return (
     <VoterLayout>
-      <div className="space-y-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h1 className="text-3xl font-bold text-navy-900 mb-2">Cast Your Votes</h1>
-          <p className="text-gray-600">
+      <div className=\"space-y-6 sm:space-y-8\">
+        <div className=\"bg-white rounded-lg shadow p-4 sm:p-6\">
+          <h1 className=\"text-2xl sm:text-3xl font-bold text-navy-900 mb-2\">Cast Your Votes</h1>
+          <p className=\"text-xs sm:text-base text-gray-600\">
             {election?.title} — Select one candidate for each position. You'll
             review your selections before they are submitted.
           </p>
         </div>
 
         {message && (
-          <div className="p-4 rounded-lg bg-yellow-50 text-yellow-800 border border-yellow-200">
+          <div className=\"p-4 rounded-lg bg-yellow-50 text-yellow-800 border border-yellow-200 text-sm sm:text-base\">
             {message}
           </div>
         )}
@@ -117,21 +117,25 @@ const VotingPage = () => {
           />
         ))}
 
-        <div className="sticky bottom-6 bg-white rounded-lg shadow p-6 flex justify-between items-center">
-          <p className="text-sm text-gray-600">
-            Selected:{" "}
-            <span className="font-bold text-navy-900">
+        {/* Sticky bottom button - responsive */}
+        <div className=\"fixed bottom-0 left-0 right-0 sm:relative bg-white rounded-none sm:rounded-lg shadow p-3 sm:p-6 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0 border-t sm:border-none\">
+          <p className=\"text-xs sm:text-sm text-gray-600\">
+            Selected:{\" \"}
+            <span className=\"font-bold text-navy-900\">
               {Object.keys(selectedCandidates).length} / {positions.length}
             </span>
           </p>
           <button
             onClick={handleProceedToReview}
             disabled={Object.keys(selectedCandidates).length !== positions.length}
-            className="bg-yellow-500 text-navy-900 px-8 py-3 rounded-lg font-semibold hover:bg-yellow-600 disabled:opacity-50 transition"
+            className=\"w-full sm:w-auto bg-yellow-500 text-navy-900 px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-semibold hover:bg-yellow-600 disabled:opacity-50 transition text-sm sm:text-base\"
           >
             Review Selections →
           </button>
         </div>
+
+        {/* Bottom spacing for mobile to account for sticky button */}
+        <div className=\"h-20 sm:h-0\" />
       </div>
     </VoterLayout>
   );

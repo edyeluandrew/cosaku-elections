@@ -1,7 +1,7 @@
-import React from "react";
+import React, { memo } from "react";
 import CandidateCard from "./CandidateCard";
 
-const PositionSection = ({
+const PositionSection = memo(({
   position,
   candidates,
   selectedCandidate = null,
@@ -27,10 +27,9 @@ const PositionSection = ({
         </div>
       )}
 
-      {/* Candidates Grid */}
+      {/* Candidates Grid - Responsive columns */}
       {candidates && candidates.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {candidates.map((candidate) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4\">\n          {candidates.map((candidate) => (
             <CandidateCard
               key={candidate.id}
               candidate={candidate}
@@ -51,6 +50,8 @@ const PositionSection = ({
       )}
     </div>
   );
-};
+});
+
+PositionSection.displayName = "PositionSection";
 
 export default PositionSection;
