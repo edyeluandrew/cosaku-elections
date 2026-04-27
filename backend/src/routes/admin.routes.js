@@ -5,6 +5,7 @@ import {
   pauseElection,
   closeElection,
   publishResults,
+  createElection,
   getVoters,
   getVotes,
   editVote,
@@ -22,6 +23,7 @@ router.use(authMiddleware, adminMiddleware);
 router.get("/dashboard", getDashboard);
 
 // Election management
+router.post("/elections", createElection);
 router.patch("/elections/:id/start", startElection);
 router.patch("/elections/:id/pause", pauseElection);
 router.patch("/elections/:id/close", closeElection);

@@ -194,6 +194,38 @@ export const publishResults = async (req, res) => {
   }
 };
 
+// Create Election
+export const createElection = async (req, res) => {
+  try {
+    const { title } = req.body;
+
+    if (!title || title.trim() === "") {
+      return res.status(400).json({ error: "Election title is required" });
+    }
+
+    const result = await query(
+      `INSERT INTO elections (title, status, created_at, updated_at)
+       VALUES ($1, 'draft', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+       RETURNING id, title, status, start_time, end_time, results_published`,
+      [title.trim()]
+    );
+
+    // Log audit
+    await query(
+      `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
+      [req.user.id, "election_created", JSON.stringify({ electionId: result.rows[0].id, title })]
+    );
+
+    res.json({
+      message: "Election created successfully",
+      election: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Create election error:", error);
+    res.status(500).json({ error: "Failed to create election" });
+  }
+};
+
 // Voter Management
 export const getVoters = async (req, res) => {
   try {

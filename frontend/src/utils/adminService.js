@@ -8,6 +8,11 @@ export const adminService = {
     return response.data;
   },
 
+  createElection: async (title) => {
+    const response = await api.post("/admin/elections", { title });
+    return response.data.election;
+  },
+
   getVoters: async () => {
     const response = await api.get("/admin/voters");
     return response.data;

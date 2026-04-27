@@ -16,6 +16,7 @@ const ElectionControl = () => {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [electionTitle, setElectionTitle] = useState("");
 
   const refresh = async () => {
     const el = await electionService.getActive();
@@ -50,6 +51,26 @@ const ElectionControl = () => {
     }
   };
 
+  const handleCreateElection = async (e) => {
+    e.preventDefault();
+    if (!electionTitle.trim()) {
+      setMessage("Please enter an election title");
+      return;
+    }
+    setBusy(true);
+    setMessage("");
+    try {
+      const newElection = await adminService.createElection(electionTitle);
+      setElection(newElection);
+      setElectionTitle("");
+      setMessage("✓ Election created successfully");
+    } catch (e) {
+      setMessage(e.response?.data?.error || "Failed to create election");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   if (loading) {
     return (
       <AdminLayout>
@@ -61,7 +82,50 @@ const ElectionControl = () => {
   if (!election) {
     return (
       <AdminLayout>
-        <div className="text-center py-8 text-gray-500">No election found</div>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold text-navy-900 mb-1">Election Control</h1>
+            <p className="text-gray-600">Create and manage elections</p>
+          </div>
+
+          {message && (
+            <div
+              className={`p-4 rounded-lg border ${
+                message.startsWith("✓")
+                  ? "bg-green-50 text-green-700 border-green-200"
+                  : "bg-red-50 text-red-700 border-red-200"
+              }`}
+            >
+              {message}
+            </div>
+          )}
+
+          <div className="bg-white rounded-lg shadow p-8">
+            <h2 className="text-2xl font-bold text-navy-900 mb-6">Create New Election</h2>
+            <form onSubmit={handleCreateElection} className="max-w-md">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Election Title
+                </label>
+                <input
+                  type="text"
+                  value={electionTitle}
+                  onChange={(e) => setElectionTitle(e.target.value)}
+                  placeholder="e.g., Class President 2024"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  disabled={busy}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={busy}
+                className="w-full bg-yellow-500 hover:bg-yellow-600 disabled:opacity-50 text-navy-900 font-semibold py-2 px-4 rounded-lg"
+              >
+                {busy ? "Creating..." : "Create Election"}
+              </button>
+            </form>
+          </div>
+        </div>
       </AdminLayout>
     );
   }
