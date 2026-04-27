@@ -70,7 +70,6 @@ const Home = () => {
             "General Secretary",
             "Publicity Secretary",
             "Treasurer",
-            "Guild Council Representative",
           ].map((position) => (
             <div key={position} className="bg-navy-800 p-6 rounded-lg text-center">
               <h3 className="text-xl font-bold text-yellow-500">{position}</h3>
