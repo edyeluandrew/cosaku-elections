@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { authService } from "../utils/authService";
-import { validateEmail, validatePassword, validateName } from "../utils/validators";
+import { validateEmail, validatePassword } from "../utils/validators";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -14,11 +14,12 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error for this field
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -60,13 +61,43 @@ const Register = () => {
         formData.confirmPassword
       );
 
-      navigate("/verify-email", { state: { email: formData.email } });
+      setRegisteredEmail(formData.email);
+      setRegistrationSuccess(true);
     } catch (error) {
       setServerError(error.response?.data?.error || "Registration failed");
     } finally {
       setLoading(false);
     }
   };
+
+  if (registrationSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-navy-900 to-navy-800 flex items-center justify-center px-4">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8 text-center">
+          <div className="text-green-500 text-5xl mb-4">✓</div>
+          <h1 className="text-3xl font-bold text-navy-900 mb-4">
+            Registration Successful!
+          </h1>
+          <p className="text-gray-700 mb-4">
+            A verification email has been sent to:
+          </p>
+          <p className="font-semibold text-gray-900 mb-6">{registeredEmail}</p>
+          <p className="text-gray-600 mb-6">
+            Please check your email and click the verification link to complete your registration.
+          </p>
+          <p className="text-sm text-gray-500 mb-6">
+            The link will expire in 24 hours.
+          </p>
+          <button
+            onClick={() => navigate("/login")}
+            className="w-full bg-yellow-500 hover:bg-yellow-600 text-navy-900 font-semibold py-2 px-4 rounded-lg"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-navy-900 to-navy-800 flex items-center justify-center px-4">
@@ -96,6 +127,7 @@ const Register = () => {
                 errors.fullName ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Your full name"
+              disabled={loading}
             />
             {errors.fullName && (
               <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
@@ -115,6 +147,7 @@ const Register = () => {
                 errors.email ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="2024akcs0001gf@kab.ac.ug"
+              disabled={loading}
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">{errors.email}</p>
@@ -134,6 +167,7 @@ const Register = () => {
                 errors.password ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="At least 8 characters"
+              disabled={loading}
             />
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password}</p>
@@ -153,18 +187,17 @@ const Register = () => {
                 errors.confirmPassword ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Confirm your password"
+              disabled={loading}
             />
             {errors.confirmPassword && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.confirmPassword}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
             )}
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-yellow-500 text-navy-900 py-2 rounded-lg font-semibold hover:bg-yellow-600 disabled:opacity-50 transition"
+            className="w-full bg-yellow-500 hover:bg-yellow-600 disabled:opacity-50 text-navy-900 font-semibold py-2 px-4 rounded-lg"
           >
             {loading ? "Registering..." : "Register"}
           </button>
@@ -172,7 +205,7 @@ const Register = () => {
 
         <p className="text-center text-gray-600 mt-6">
           Already have an account?{" "}
-          <Link to="/login" className="text-yellow-500 font-semibold hover:underline">
+          <Link to="/login" className="text-yellow-500 font-semibold hover:text-yellow-600">
             Sign in
           </Link>
         </p>
