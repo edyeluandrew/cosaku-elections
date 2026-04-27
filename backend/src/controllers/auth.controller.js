@@ -198,12 +198,21 @@ export const verifyEmail = async (req, res) => {
       [user.id]
     );
 
+    // Generate JWT token to automatically log them in
+    const jwtToken = generateJWT({
+      id: user.id,
+      email: user.email,
+      role: "voter",
+    });
+
     res.json({
       message: "Email verified successfully",
+      token: jwtToken,
       user: {
         id: user.id,
         email: user.email,
         fullName: user.full_name,
+        role: "voter",
       },
     });
   } catch (error) {

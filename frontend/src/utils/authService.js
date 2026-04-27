@@ -26,6 +26,14 @@ export const authService = {
 
   verifyEmail: async (token) => {
     const response = await api.get(`/auth/verify-email?token=${token}`);
+    const { token: jwtToken, user } = response.data;
+    
+    // Save token and user to localStorage if provided (auto-login after verification)
+    if (jwtToken) {
+      localStorage.setItem("token", jwtToken);
+      localStorage.setItem("user", JSON.stringify(user));
+    }
+    
     return response.data;
   },
 

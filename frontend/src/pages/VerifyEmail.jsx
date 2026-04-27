@@ -24,12 +24,9 @@ const VerifyEmail = () => {
         setStatus("success");
         setMessage("Email verified successfully!");
 
-        const isAuthenticated = authService.isAuthenticated();
-        const destination = isAuthenticated ? "/vote" : "/login";
-        const state = isAuthenticated ? undefined : { redirectTo: "/vote" };
-
+        // Automatically redirect to voting page after verification
         setTimeout(() => {
-          navigate(destination, { state });
+          navigate("/vote");
         }, 2000);
       } catch (error) {
         setStatus("error");
