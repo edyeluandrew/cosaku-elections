@@ -7,16 +7,16 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor': [
-            'react',
-            'react-dom',
-            'react-router-dom',
-            'axios',
-            'socket.io-client',
-          ],
-          'charts': ['recharts'],
-          'utils': ['html2canvas', 'jspdf', 'xlsx'],
+        manualChunks(id) {
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router-dom') || id.includes('node_modules/axios') || id.includes('node_modules/socket.io-client')) {
+            return 'vendor';
+          }
+          if (id.includes('node_modules/recharts')) {
+            return 'charts';
+          }
+          if (id.includes('node_modules/html2canvas') || id.includes('node_modules/jspdf') || id.includes('node_modules/xlsx')) {
+            return 'utils';
+          }
         },
       },
     },

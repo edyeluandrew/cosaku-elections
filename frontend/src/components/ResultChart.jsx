@@ -13,9 +13,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const COLORS = [\"#F5B700\", \"#0B1F3A\", \"#10B981\", \"#EF4444\", \"#3B82F6\"];
+const COLORS = ["#F5B700", "#0B1F3A", "#10B981", "#EF4444", "#3B82F6"];
 
-const ResultChart = memo(({ position, type = \"bar\" }) => {
+const ResultChart = memo(({ position, type = "bar" }) => {
   if (!position || !position.candidates || position.candidates.length === 0) {
     return (
       <div className="w-full h-48 sm:h-64 flex items-center justify-center bg-gray-100 rounded-lg">
@@ -34,7 +34,7 @@ const ResultChart = memo(({ position, type = \"bar\" }) => {
     [position.candidates]
   );
 
-  const isMobile = typeof window !== \"undefined\" && window.innerWidth < 768;
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
   if (type === "pie") {
     return (
@@ -42,13 +42,13 @@ const ResultChart = memo(({ position, type = \"bar\" }) => {
         <PieChart>
           <Pie
             data={data}
-            cx=\"50%\"
-            cy=\"50%\"
+            cx="50%"
+            cy="50%"
             labelLine={false}
             label={isMobile ? undefined : ({ name, votes }) => `${name}: ${votes}`}
             outerRadius={isMobile ? 80 : 100}
-            fill=\"#8884d8\"
-            dataKey=\"votes\"
+            fill="#8884d8"
+            dataKey="votes"
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -62,7 +62,7 @@ const ResultChart = memo(({ position, type = \"bar\" }) => {
 
   // Default to bar chart
   return (
-    <ResponsiveContainer width=\"100%\" height={isMobile ? 250 : 300}>
+    <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
       <BarChart
         data={data}
         margin={{
@@ -72,22 +72,22 @@ const ResultChart = memo(({ position, type = \"bar\" }) => {
           bottom: isMobile ? 60 : 80,
         }}
       >
-        <CartesianGrid strokeDasharray=\"3 3\" />
+        <CartesianGrid strokeDasharray="3 3" />
         <XAxis
-          dataKey=\"name\"
+          dataKey="name"
           angle={isMobile ? -45 : -45}
-          textAnchor=\"end\"
+          textAnchor="end"
           height={isMobile ? 60 : 80}
           tick={{ fontSize: isMobile ? 12 : 14 }}
         />
         <YAxis tick={{ fontSize: isMobile ? 12 : 14 }} />
         <Tooltip />
-        <Bar dataKey=\"votes\" fill=\"#F5B700\" />
+        <Bar dataKey="votes" fill="#F5B700" />
       </BarChart>
     </ResponsiveContainer>
   );
 });
 
-ResultChart.displayName = \"ResultChart\";
+ResultChart.displayName = "ResultChart";
 
 export default ResultChart;
