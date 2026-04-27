@@ -75,25 +75,19 @@ const Register = () => {
       <div className="min-h-screen bg-gradient-to-br from-navy-900 to-navy-800 flex items-center justify-center px-4">
         <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8 text-center">
           <div className="text-green-500 text-5xl mb-4">✓</div>
-          <h1 className="text-3xl font-bold text-navy-900 mb-4">
+          <h1 className="text-3xl font-bold text-navy-900 mb-6">
             Registration Successful!
           </h1>
-          <p className="text-gray-700 mb-4">
+          <p className="text-gray-600 mb-3">
             A verification email has been sent to:
           </p>
-          <p className="font-semibold text-gray-900 mb-6">{registeredEmail}</p>
-          <p className="text-gray-600 mb-6">
-            Please check your email and click the verification link to complete your registration.
+          <p className="font-semibold text-gray-900 mb-8">{registeredEmail}</p>
+          <p className="text-gray-700 mb-8 leading-relaxed">
+            Please check your email inbox and click the verification link to confirm your registration and proceed to voting.
           </p>
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-gray-500">
             The link will expire in 24 hours.
           </p>
-          <button
-            onClick={() => navigate("/login")}
-            className="w-full bg-yellow-500 hover:bg-yellow-600 text-navy-900 font-semibold py-2 px-4 rounded-lg"
-          >
-            Go to Login
-          </button>
         </div>
       </div>
     );
