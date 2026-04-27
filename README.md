@@ -1,87 +1,165 @@
 # COSAKU Votes - Real-Time University Voting System
 
-A modern, real-time voting platform for COSAKU (Computing Students Association of Kabale University) Executive Committee elections.
+A modern, secure, and real-time voting platform for COSAKU (Computing Students Association of Kabale University) Executive Committee elections.
 
-## Project Structure
+---
 
-### Backend (Node.js/Express)
-- `src/config/` - Database and environment configuration
-- `src/controllers/` - Business logic for each feature
-- `src/routes/` - API endpoints
-- `src/middleware/` - Authentication and validation middleware
-- `src/utils/` - Utilities (validators, email, tokens)
-- `src/sockets/` - Socket.IO for real-time updates
-- `src/server.js` - Main server entry point
-- `src/app.js` - Express app setup
+## 📋 Table of Contents
 
-### Frontend (React/Vite)
-- `src/pages/` - Full page components
-- `src/components/` - Reusable components
-- `src/layouts/` - Layout wrappers
-- `src/utils/` - Services and utilities
-- `src/api/` - Axios API client
-- `src/sockets/` - Socket.IO client
-- `App.jsx` - Main routing
+- [Overview](#overview)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
+- [Setup Instructions](#setup-instructions)
+- [Running the Application](#running-the-application)
+- [API Endpoints](#api-endpoints)
+- [Database Schema](#database-schema)
+- [Deployment](#deployment)
+- [Troubleshooting](#troubleshooting)
 
-## Features
+---
 
-### Voter Features
-- **Registration & Email Verification**: Secure email-based voter registration with Kabale University email format validation
-- **Vote Casting**: Cast up to 9 votes (one per position)
-- **Vote Review**: Review your votes before final submission
-- **Live Results**: Real-time election results with charts
-- **Dashboard**: Voter dashboard with voting progress
+## 🎯 Overview
 
-### Admin Features
-- **Candidate Management**: Add, edit, and delete candidates
-- **Election Control**: Start, pause, close, and publish elections
-- **Vote Management**: Edit submitted votes with full audit trail
-- **Live Results Monitoring**: Real-time results dashboard
-- **Reports**: Download election results as PDF/CSV
-- **Voter Management**: View registered voters
-- **Audit Logs**: Complete audit trail of all actions
+COSAKU Votes is a comprehensive voting management system designed specifically for university elections. It provides:
+- **Real-time results** with live updates via WebSockets
+- **Secure authentication** with email verification
+- **Admin controls** for election management
+- **Audit trails** for all actions
+- **Mobile-responsive design** using Tailwind CSS
 
-## Election Positions
+---
 
-1. President
-2. Vice President
-3. Speaker
-4. Deputy Speaker
-5. Project Lead
-6. General Secretary
-7. Publicity Secretary
-8. Treasurer
-9. Guild Council Representative
+## ✨ Features
 
-## Technology Stack
+### 🗳️ Voter Features
+
+- **Registration & Email Verification**
+  - Secure email-based voter registration
+  - Kabale University email format validation (2024akcs0001gf@kab.ac.ug)
+  - 24-hour verification token expiry
+  - Auto-login after email verification
+
+- **Vote Casting**
+  - Cast up to 9 votes (one per position)
+  - Review votes before submission
+  - Cannot change vote once submitted
+
+- **Live Results**
+  - Real-time election results with charts
+  - Results update as votes come in
+  - View individual position results
+
+- **Dashboard**
+  - Voter voting progress
+  - Current election status
+  - Vote history
+
+### 👨‍💼 Admin Features
+
+- **Election Management**
+  - Create new elections
+  - Start, pause, close, and publish elections
+  - Set election timeline
+
+- **Candidate Management**
+  - Add candidates with profile pictures
+  - Upload candidate manifestos and slogans
+  - Organize by position
+
+- **Vote Management**
+  - Edit submitted votes with audit trail
+  - Add reasons for vote changes
+  - Track all modifications
+
+- **Dashboard & Reporting**
+  - Real-time admin dashboard
+  - Participation statistics
+  - Download results as PDF/CSV
+  - Complete audit logs
+
+- **Voter Management**
+  - View all registered voters
+  - Verify voter emails
+  - Track voter participation
+
+---
+
+## 🛠️ Technology Stack
 
 ### Backend
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: PostgreSQL (Neon)
-- **Real-time**: Socket.IO
-- **Authentication**: JWT
-- **Password**: bcryptjs
-- **Email**: Nodemailer
-- **File Upload**: Multer
-- **Module System**: ES6+
+| Component | Technology |
+|-----------|-----------|
+| Runtime | Node.js v16+ |
+| Framework | Express.js |
+| Database | PostgreSQL (Neon) |
+| Real-time | Socket.IO |
+| Auth | JWT (JSON Web Tokens) |
+| Password | bcryptjs |
+| Email | Nodemailer |
+| File Upload | Multer |
+| Module System | ES6+ |
 
 ### Frontend
-- **Framework**: React 19
-- **Build**: Vite
-- **Styling**: Tailwind CSS
-- **Charts**: Recharts
-- **API Client**: Axios
-- **Real-time**: Socket.IO Client
-- **Routing**: React Router DOM
-- **Export**: jsPDF, html2canvas, xlsx
-- **Module System**: ES6+
+| Component | Technology |
+|-----------|-----------|
+| Framework | React 19 |
+| Build Tool | Vite |
+| Styling | Tailwind CSS |
+| Charts | Recharts |
+| API Client | Axios |
+| Real-time | Socket.IO Client |
+| Routing | React Router DOM v6 |
+| Exports | jsPDF, html2canvas, xlsx |
 
-## Setup Instructions
+---
+
+## 📁 Project Structure
+
+```
+cosaku-votes/
+├── backend/
+│   ├── src/
+│   │   ├── config/              # Database & environment config
+│   │   ├── controllers/         # Business logic
+│   │   ├── routes/              # API endpoints
+│   │   ├── middleware/          # Auth & validation
+│   │   ├── utils/               # Helpers & utilities
+│   │   ├── sockets/             # Socket.IO events
+│   │   ├── uploads/             # Uploaded files
+│   │   ├── app.js               # Express app setup
+│   │   └── server.js            # Server entry point
+│   ├── .env
+│   └── package.json
+│
+├── frontend/
+│   ├── src/
+│   │   ├── api/                 # Axios client
+│   │   ├── components/          # Reusable components
+│   │   ├── layouts/             # Layout wrappers
+│   │   ├── pages/               # Page components
+│   │   ├── utils/               # Services & utilities
+│   │   ├── sockets/             # Socket.IO client
+│   │   ├── App.jsx              # Main routing
+│   │   └── main.jsx             # Entry point
+│   ├── .env
+│   ├── tailwind.config.js
+│   └── package.json
+│
+└── .github/
+    └── workflows/
+        └── deploy.yml           # GitHub Actions CI/CD
+```
+
+---
+
+## 🚀 Setup Instructions
 
 ### Prerequisites
-- Node.js v16+ and npm
-- PostgreSQL database (or Neon)
+
+- Node.js v16 or higher
+- npm or yarn
+- PostgreSQL database (or Neon cloud database)
 - Git
 
 ### Backend Setup
@@ -96,30 +174,48 @@ A modern, real-time voting platform for COSAKU (Computing Students Association o
    npm install
    ```
 
-3. **Create .env file** (already created, update with your values)
-   ```
-   DATABASE_URL=postgresql://user:password@host:port/database
-   JWT_SECRET=your_secret_key
-   EMAIL_USER=your_email@gmail.com
-   EMAIL_PASS=your_app_password
-   ```
-
-4. **Initialize database**
+3. **Create `.env` file** with your configuration
    ```bash
-   npm start
+   cp .env.example .env
    ```
-   The database schema will be created automatically on first run.
 
-5. **Seed admin account**
+4. **Update `.env` with your values**
+   ```
+   DATABASE_URL=postgresql://user:password@localhost:5432/cosaku_votes
+   JWT_SECRET=your_super_secret_jwt_key_here
+   JWT_EXPIRES_IN=7d
+   
+   # Email Configuration (Gmail)
+   EMAIL_HOST=smtp.gmail.com
+   EMAIL_PORT=587
+   EMAIL_USER=your_email@gmail.com
+   EMAIL_PASS=your_app_specific_password
+   EMAIL_FROM=COSAKU Votes <noreply@cosaku.com>
+   
+   # Client URL
+   CLIENT_URL=http://localhost:5173
+   
+   # Admin Credentials
+   DEFAULT_ADMIN_NAME=Admin User
+   DEFAULT_ADMIN_EMAIL=admin@example.com
+   DEFAULT_ADMIN_PASSWORD=SecurePass123
+   ```
+
+5. **Initialize database**
+   ```bash
+   npm run init-db
+   ```
+
+6. **Seed default admin account**
    ```bash
    npm run seed
    ```
 
-6. **Start server**
+7. **Start development server**
    ```bash
    npm run dev
    ```
-   Server will run on http://localhost:5000
+   Server runs on: `http://localhost:5000`
 
 ### Frontend Setup
 
@@ -133,195 +229,247 @@ A modern, real-time voting platform for COSAKU (Computing Students Association o
    npm install
    ```
 
-3. **Ensure .env is configured** (already created)
+3. **Create `.env` file**
+   ```bash
+   cp .env.example .env
+   ```
+
+4. **Update `.env` with your values**
    ```
    VITE_API_URL=http://localhost:5000/api
    VITE_SOCKET_URL=http://localhost:5000
    ```
 
-4. **Start development server**
+5. **Start development server**
    ```bash
    npm run dev
    ```
-   Frontend will run on http://localhost:5173
+   Frontend runs on: `http://localhost:5173`
 
-## Default Admin Account
+---
+
+## 🎮 Running the Application
+
+### Both Frontend & Backend (Recommended)
+
+Open two terminals:
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm run dev
+```
+
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
+npm run dev
+```
+
+Then open: `http://localhost:5173`
+
+### Default Admin Account
 
 - **Email**: edyeluandrew@outlook.com
 - **Password**: stellar.onchain
 
-## Email Validation Rules
+---
 
-Valid Kabale University email format:
-```
-YEAR + a + PROGRAM_CODE + 4_DIGITS + STUDY_TYPE + @kab.ac.ug
-```
-
-Examples:
-- 2023akcs0047gf@kab.ac.ug ✓
-- 2024akit0147f@kab.ac.ug ✓
-- 2025adcs9999gf@kab.ac.ug ✓
-
-## API Endpoints
+## 🔌 API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register new voter
-- `POST /api/auth/login` - Login voter
-- `GET /api/auth/verify-email?token=...` - Verify email
-- `POST /api/auth/resend-verification` - Resend verification email
-- `GET /api/auth/me` - Get current user
+```
+POST   /api/auth/register                    - Register new voter
+POST   /api/auth/login                       - Login
+GET    /api/auth/verify-email?token=xxx      - Verify email
+POST   /api/auth/resend-verification         - Resend verification
+GET    /api/auth/me                          - Get current user
+```
+
+### Elections
+```
+GET    /api/elections/active                 - Get active election
+GET    /api/elections                        - List all elections
+POST   /api/admin/elections                  - Create election (admin)
+PATCH  /api/admin/elections/:id/start        - Start election (admin)
+PATCH  /api/admin/elections/:id/pause        - Pause election (admin)
+PATCH  /api/admin/elections/:id/close        - Close election (admin)
+PATCH  /api/admin/elections/:id/publish      - Publish results (admin)
+```
 
 ### Candidates
-- `GET /api/candidates` - Get candidates
-- `GET /api/candidates/by-position` - Get candidates grouped by position
-- `POST /api/candidates` - Add candidate (admin)
-- `PATCH /api/candidates/:id` - Update candidate (admin)
-- `DELETE /api/candidates/:id` - Delete candidate (admin)
+```
+GET    /api/candidates                       - Get all candidates
+GET    /api/candidates/by-position           - Get candidates by position
+POST   /api/candidates                       - Add candidate (admin)
+PATCH  /api/candidates/:id                   - Update candidate (admin)
+DELETE /api/candidates/:id                   - Delete candidate (admin)
+```
 
 ### Voting
-- `POST /api/vote/submit` - Submit a vote
-- `GET /api/vote/my-votes` - Get my votes
-- `GET /api/vote/by-position` - Get votes by position
+```
+POST   /api/vote/submit                      - Submit a vote
+GET    /api/vote/my-votes                    - Get my votes
+GET    /api/vote/by-position                 - Get votes by position
+```
 
 ### Results
-- `GET /api/results/live` - Get live results
-- `GET /api/results/position/:positionId/:electionId` - Get position results
-- `GET /api/results/published` - Get published results
+```
+GET    /api/results/live                     - Get live results
+GET    /api/results/position/:positionId     - Get position results
+GET    /api/results/published                - Get published results
+```
 
 ### Admin
-- `GET /api/admin/dashboard` - Admin dashboard
-- `GET /api/admin/voters` - List voters
-- `GET /api/admin/votes` - List all votes
-- `PATCH /api/admin/votes/:voteId` - Edit a vote
-- `GET /api/admin/vote-edit-logs` - Get vote edit logs
-- `PATCH /api/admin/elections/:id/start` - Start election
-- `PATCH /api/admin/elections/:id/pause` - Pause election
-- `PATCH /api/admin/elections/:id/close` - Close election
-- `PATCH /api/admin/elections/:id/publish` - Publish results
-
-## Database Schema
-
-### Users Table
-- id, full_name, email, password_hash, role, is_email_verified, email_verification_token, created_at, updated_at
-
-### Elections Table
-- id, title, status, start_time, end_time, results_published, created_at, updated_at
-
-### Positions Table
-- id, election_id, name, description, display_order, created_at
-
-### Candidates Table
-- id, election_id, position_id, full_name, program, profile_picture_url, slogan, manifesto, created_at, updated_at
-
-### Votes Table
-- id, election_id, position_id, candidate_id, voter_id, last_edited_by, created_at, updated_at
-- UNIQUE(voter_id, position_id)
-
-### Vote Edit Logs Table
-- id, vote_id, edited_by_admin_id, election_id, position_id, old_candidate_id, new_candidate_id, reason, created_at
-
-### Audit Logs Table
-- id, actor_id, action, details (JSONB), created_at
-
-## Real-Time Features
-
-### Socket.IO Events
-- **join_election** - Join election room for updates
-- **leave_election** - Leave election room
-- **results:update** - Results update event (broadcast to all clients in room)
-
-## Security Features
-
-- **Email Verification**: Only verified emails can vote
-- **JWT Authentication**: Secure token-based authentication
-- **Password Hashing**: Bcryptjs for secure password storage
-- **Vote Uniqueness**: One vote per position per voter (database constraint)
-- **Audit Logging**: Complete audit trail of all actions
-- **Vote Edit Logging**: Track all vote changes with reasons
-
-## Color Theme
-
-- **Golden Yellow**: #F5B700 (Primary highlight)
-- **Deep Navy**: #0B1F3A (Primary dark)
-- **Soft White**: #F8FAFC (Background)
-- **Emerald Green**: #10B981 (Success states)
-- **Red**: #EF4444 (Error states)
-
-## File Structure
-
 ```
-cosaku-votes/
-├── backend/
-│   ├── src/
-│   │   ├── config/
-│   │   ├── controllers/
-│   │   ├── middleware/
-│   │   ├── routes/
-│   │   ├── sockets/
-│   │   ├── utils/
-│   │   ├── uploads/
-│   │   ├── app.js
-│   │   └── server.js
-│   ├── .env
-│   ├── .gitignore
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── api/
-│   │   ├── assets/
-│   │   ├── components/
-│   │   ├── layouts/
-│   │   ├── pages/
-│   │   ├── sockets/
-│   │   ├── utils/
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   ├── index.css
-│   │   └── App.css
-│   ├── .env
-│   ├── tailwind.config.js
-│   ├── postcss.config.js
-│   └── package.json
-└── README.md
+GET    /api/admin/dashboard                  - Admin dashboard
+GET    /api/admin/voters                     - List voters
+GET    /api/admin/votes                      - List all votes
+PATCH  /api/admin/votes/:voteId              - Edit a vote (admin)
+GET    /api/admin/vote-edit-logs             - Vote edit history
 ```
 
-## Development Notes
+---
 
-### Backend
-- Uses ES6+ module syntax exclusively
-- Database auto-initializes on first run
-- Admin account auto-created if doesn't exist
-- Comprehensive error handling with detailed error messages
+## 💾 Database Schema
 
-### Frontend
-- Fully responsive with Tailwind CSS
-- Real-time updates via Socket.IO
-- Protected routes for authenticated users
-- Role-based access control (voter vs admin)
+### Users
+- `id`, `full_name`, `email`, `password_hash`, `role`, `is_email_verified`, `email_verification_token`, `created_at`, `updated_at`
 
-## Troubleshooting
+### Elections
+- `id`, `title`, `status` (draft/active/paused/closed/published), `start_time`, `end_time`, `results_published`, `created_at`, `updated_at`
+
+### Positions
+- `id`, `election_id`, `name`, `description`, `display_order`, `created_at`
+
+### Candidates
+- `id`, `election_id`, `position_id`, `full_name`, `program`, `profile_picture_url`, `slogan`, `manifesto`, `created_at`, `updated_at`
+
+### Votes
+- `id`, `election_id`, `position_id`, `candidate_id`, `voter_id`, `last_edited_by`, `created_at`, `updated_at`
+- **Constraint**: One vote per voter per position
+
+### Vote Edit Logs
+- `id`, `vote_id`, `edited_by_admin_id`, `election_id`, `position_id`, `old_candidate_id`, `new_candidate_id`, `reason`, `created_at`
+
+### Audit Logs
+- `id`, `actor_id`, `action`, `details` (JSON), `created_at`
+
+---
+
+## 🚢 Deployment
+
+### Deploy to Render
+
+1. **Create Render Account**: https://render.com
+
+2. **Connect GitHub Repository**
+   - Sign in to Render
+   - Create new PostgreSQL database
+   - Create new Web Service
+   - Connect your GitHub repo
+
+3. **Set Environment Variables**
+   In Render Dashboard → Environment:
+   ```
+   DATABASE_URL=your_neon_database_url
+   JWT_SECRET=your_secret_key
+   EMAIL_USER=your_email
+   EMAIL_PASS=your_app_password
+   CLIENT_URL=https://your-frontend-url.vercel.app
+   ```
+
+4. **Deploy Frontend to Vercel**
+   - Push to GitHub
+   - Sign in to Vercel
+   - Import your GitHub repo
+   - Deploy
+
+5. **GitHub Actions CI/CD** (Optional)
+   - Add `RENDER_DEPLOY_HOOK` secret to GitHub
+   - Workflow automatically triggers on push to main
+
+---
+
+## 🐛 Troubleshooting
 
 ### Database Connection Issues
-- Verify DATABASE_URL in .env
-- Ensure PostgreSQL is running
-- Check database credentials
+```
+✗ Error: connect ECONNREFUSED
+→ Check DATABASE_URL in .env
+→ Ensure PostgreSQL is running
+→ Verify credentials are correct
+```
 
 ### Email Not Sending
-- Enable "Less secure app access" in Gmail
-- Use app-specific password for Gmail
-- Verify EMAIL_USER and EMAIL_PASS in .env
+```
+✗ Error: Invalid login
+→ Use app-specific password for Gmail (not regular password)
+→ Enable "Less secure app access"
+→ Verify EMAIL_USER and EMAIL_PASS in .env
+```
 
-### CORS Issues
-- Verify CLIENT_URL in backend .env
-- Verify VITE_API_URL and VITE_SOCKET_URL in frontend .env
-- Ensure both are running on correct ports
+### CORS Errors
+```
+✗ Error: No 'Access-Control-Allow-Origin' header
+→ Verify CLIENT_URL in backend .env
+→ Verify VITE_API_URL in frontend .env
+→ Both must include http:// or https://
+```
 
-## License
+### Port Already in Use
+```
+Backend (5000):
+  kill $(lsof -t -i:5000)
 
-This project is built for COSAKU Elections at Kabale University.
+Frontend (5173):
+  kill $(lsof -t -i:5173)
+```
 
-## Support
+---
 
-For issues or questions, please contact the development team.
-#   D e p l o y m e n t   t e s t   0 4 / 2 7 / 2 0 2 6   0 0 : 1 3 : 4 1  
- 
+## 🎨 Design System
+
+### Color Palette
+- **Golden Yellow** (#F5B700) - Primary highlight
+- **Deep Navy** (#0B1F3A) - Primary dark
+- **Soft White** (#F8FAFC) - Background
+- **Emerald Green** (#10B981) - Success
+- **Red** (#EF4444) - Errors
+
+### Responsive Design
+- Mobile-first approach
+- Tailwind CSS utilities
+- Works on all devices
+
+---
+
+## 🔒 Security Features
+
+- ✅ Email verification required to vote
+- ✅ JWT token-based authentication
+- ✅ Bcryptjs password hashing
+- ✅ One vote per position per voter (DB constraint)
+- ✅ Complete audit logging
+- ✅ Vote edit tracking with reasons
+- ✅ CORS protection
+- ✅ Input validation & sanitization
+
+---
+
+## 📞 Support
+
+For issues or questions, please:
+1. Check the [Troubleshooting](#troubleshooting) section
+2. Create a GitHub issue
+3. Contact the development team
+
+---
+
+## 📄 License
+
+Built for COSAKU Elections at Kabale University.
+
+---
+
+**Last Updated**: April 27, 2026
