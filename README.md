@@ -323,3 +323,5 @@ This project is built for COSAKU Elections at Kabale University.
 ## Support
 
 For issues or questions, please contact the development team.
+#   D e p l o y m e n t   t e s t   0 4 / 2 7 / 2 0 2 6   0 0 : 1 3 : 4 1  
+ 
