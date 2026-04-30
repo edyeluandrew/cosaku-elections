@@ -69,19 +69,24 @@ export const submitVote = async (req, res) => {
 
     const vote = result.rows[0];
 
-    await query(
-      `INSERT INTO audit_logs (actor_id, action, details)
-       VALUES ($1, $2, $3)`,
-      [
-        voterId,
-        "vote_submitted",
-        JSON.stringify({
-          voteId: vote.id,
-          positionId: positionId,
-          candidateId: candidateId,
-        }),
-      ]
-    );
+    // Log audit (non-blocking - don't fail if user doesn't exist)
+    try {
+      await query(
+        `INSERT INTO audit_logs (actor_id, action, details)
+         VALUES ($1, $2, $3)`,
+        [
+          voterId,
+          "vote_submitted",
+          JSON.stringify({
+            voteId: vote.id,
+            positionId: positionId,
+            candidateId: candidateId,
+          }),
+        ]
+      );
+    } catch (auditError) {
+      console.warn("Failed to log audit:", auditError.message);
+    }
 
     // Broadcast updated results to everyone watching this election
     broadcastResults(electionId).catch((e) =>

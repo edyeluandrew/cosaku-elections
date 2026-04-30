@@ -75,19 +75,23 @@ export const addCandidate = async (req, res) => {
 
     const candidate = result.rows[0];
 
-    // Log audit
-    await query(
-      `INSERT INTO audit_logs (actor_id, action, details)
-       VALUES ($1, $2, $3)`,
-      [
-        req.user.id,
-        "candidate_added",
-        JSON.stringify({
-          candidateId: candidate.id,
-          candidateName: fullName,
-        }),
-      ]
-    );
+    // Log audit (non-blocking - don't fail if user doesn't exist)
+    try {
+      await query(
+        `INSERT INTO audit_logs (actor_id, action, details)
+         VALUES ($1, $2, $3)`,
+        [
+          req.user.id,
+          "candidate_added",
+          JSON.stringify({
+            candidateId: candidate.id,
+            candidateName: fullName,
+          }),
+        ]
+      );
+    } catch (auditError) {
+      console.warn("Failed to log audit:", auditError.message);
+    }
 
     res.status(201).json({
       message: "Candidate added successfully",
@@ -261,25 +265,29 @@ export const updateCandidate = async (req, res) => {
 
     const updatedCandidate = result.rows[0];
 
-    // Log audit
-    await query(
-      `INSERT INTO audit_logs (actor_id, action, details)
-       VALUES ($1, $2, $3)`,
-      [
-        req.user.id,
-        "candidate_updated",
-        JSON.stringify({
-          candidateId: id,
-          changes: {
-            fullName,
-            program,
-            slogan,
-            manifesto,
-            yearOfStudy,
-          },
-        }),
-      ]
-    );
+    // Log audit (non-blocking - don't fail if user doesn't exist)
+    try {
+      await query(
+        `INSERT INTO audit_logs (actor_id, action, details)
+         VALUES ($1, $2, $3)`,
+        [
+          req.user.id,
+          "candidate_updated",
+          JSON.stringify({
+            candidateId: id,
+            changes: {
+              fullName,
+              program,
+              slogan,
+              manifesto,
+              yearOfStudy,
+            },
+          }),
+        ]
+      );
+    } catch (auditError) {
+      console.warn("Failed to log audit:", auditError.message);
+    }
 
     res.json({
       message: "Candidate updated successfully",
@@ -310,19 +318,23 @@ export const deleteCandidate = async (req, res) => {
     // Delete candidate
     await query("DELETE FROM candidates WHERE id = $1", [id]);
 
-    // Log audit
-    await query(
-      `INSERT INTO audit_logs (actor_id, action, details)
-       VALUES ($1, $2, $3)`,
-      [
-        req.user.id,
-        "candidate_deleted",
-        JSON.stringify({
-          candidateId: id,
-          candidateName: candidateName,
-        }),
-      ]
-    );
+    // Log audit (non-blocking - don't fail if user doesn't exist)
+    try {
+      await query(
+        `INSERT INTO audit_logs (actor_id, action, details)
+         VALUES ($1, $2, $3)`,
+        [
+          req.user.id,
+          "candidate_deleted",
+          JSON.stringify({
+            candidateId: id,
+            candidateName: candidateName,
+          }),
+        ]
+      );
+    } catch (auditError) {
+      console.warn("Failed to log audit:", auditError.message);
+    }
 
     res.json({
       message: "Candidate deleted successfully",

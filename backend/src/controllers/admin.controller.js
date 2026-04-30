@@ -80,11 +80,15 @@ export const startElection = async (req, res) => {
       return res.status(404).json({ error: "Election not found" });
     }
 
-    // Log audit
-    await query(
-      `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
-      [req.user.id, "election_started", JSON.stringify({ electionId: id })]
-    );
+    // Log audit (non-blocking - don't fail if user doesn't exist)
+    try {
+      await query(
+        `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
+        [req.user.id, "election_started", JSON.stringify({ electionId: id })]
+      );
+    } catch (auditError) {
+      console.warn("Failed to log audit:", auditError.message);
+    }
 
     res.json({
       message: "Election started",
@@ -111,11 +115,15 @@ export const pauseElection = async (req, res) => {
       return res.status(404).json({ error: "Election not found" });
     }
 
-    // Log audit
-    await query(
-      `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
-      [req.user.id, "election_paused", JSON.stringify({ electionId: id })]
-    );
+    // Log audit (non-blocking - don't fail if user doesn't exist)
+    try {
+      await query(
+        `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
+        [req.user.id, "election_paused", JSON.stringify({ electionId: id })]
+      );
+    } catch (auditError) {
+      console.warn("Failed to log audit:", auditError.message);
+    }
 
     res.json({
       message: "Election paused",
@@ -142,11 +150,15 @@ export const closeElection = async (req, res) => {
       return res.status(404).json({ error: "Election not found" });
     }
 
-    // Log audit
-    await query(
-      `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
-      [req.user.id, "election_closed", JSON.stringify({ electionId: id })]
-    );
+    // Log audit (non-blocking - don't fail if user doesn't exist)
+    try {
+      await query(
+        `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
+        [req.user.id, "election_closed", JSON.stringify({ electionId: id })]
+      );
+    } catch (auditError) {
+      console.warn("Failed to log audit:", auditError.message);
+    }
 
     res.json({
       message: "Election closed",
@@ -173,11 +185,15 @@ export const publishResults = async (req, res) => {
       return res.status(404).json({ error: "Election not found" });
     }
 
-    // Log audit
-    await query(
-      `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
-      [req.user.id, "results_published", JSON.stringify({ electionId: id })]
-    );
+    // Log audit (non-blocking - don't fail if user doesn't exist)
+    try {
+      await query(
+        `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
+        [req.user.id, "results_published", JSON.stringify({ electionId: id })]
+      );
+    } catch (auditError) {
+      console.warn("Failed to log audit:", auditError.message);
+    }
 
     res.json({
       message: "Results published",
@@ -205,11 +221,15 @@ export const createElection = async (req, res) => {
       [title.trim()]
     );
 
-    // Log audit
-    await query(
-      `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
-      [req.user.id, "election_created", JSON.stringify({ electionId: result.rows[0].id, title })]
-    );
+    // Log audit (non-blocking - don't fail if user doesn't exist)
+    try {
+      await query(
+        `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
+        [req.user.id, "election_created", JSON.stringify({ electionId: result.rows[0].id, title })]
+      );
+    } catch (auditError) {
+      console.warn("Failed to log audit:", auditError.message);
+    }
 
     res.json({
       message: "Election created successfully",
@@ -348,20 +368,24 @@ export const editVote = async (req, res) => {
       ]
     );
 
-    // Log audit
-    await query(
-      `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
-      [
-        req.user.id,
-        "vote_edited",
-        JSON.stringify({
-          voteId: voteId,
-          oldCandidateId: oldCandidateId,
-          newCandidateId: newCandidateId,
-          reason: reason,
-        }),
-      ]
-    );
+    // Log audit (non-blocking - don't fail if user doesn't exist)
+    try {
+      await query(
+        `INSERT INTO audit_logs (actor_id, action, details) VALUES ($1, $2, $3)`,
+        [
+          req.user.id,
+          "vote_edited",
+          JSON.stringify({
+            voteId: voteId,
+            oldCandidateId: oldCandidateId,
+            newCandidateId: newCandidateId,
+            reason: reason,
+          }),
+        ]
+      );
+    } catch (auditError) {
+      console.warn("Failed to log audit:", auditError.message);
+    }
 
     // Broadcast updated results in real-time
     broadcastResults(vote.election_id).catch((e) =>
