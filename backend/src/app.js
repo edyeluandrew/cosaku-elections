@@ -33,8 +33,24 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded files
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Serve uploaded files with proper caching and CORS headers
+app.use("/uploads", (req, res, next) => {
+  // Set CORS headers for uploads
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  
+  // Set cache control for images (1 hour cache)
+  res.header("Cache-Control", "public, max-age=3600");
+  res.header("X-Content-Type-Options", "nosniff");
+  
+  next();
+}, express.static(path.join(__dirname, "uploads"), {
+  // Configure static file serving
+  maxAge: "1h",
+  etag: false,
+  index: false,
+}));
 
 // API Routes
 app.use("/api/auth", authRoutes);

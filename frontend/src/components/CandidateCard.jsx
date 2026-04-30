@@ -1,4 +1,5 @@
 import React, { memo } from "react";
+import { resolveImageUrl } from "../utils/imageUtils";
 
 const CandidateCard = memo(({
   candidate,
@@ -8,6 +9,8 @@ const CandidateCard = memo(({
   voteCount = 0,
   percentage = 0,
 }) => {
+  // Resolve the image URL to ensure it's correctly formatted
+  const imageUrl = resolveImageUrl(candidate.profilePictureUrl);
   return (
     <div
       onClick={onSelect}
@@ -19,12 +22,16 @@ const CandidateCard = memo(({
     >
       {/* Profile Picture - Responsive aspect ratio */}
       <div className="mb-4 aspect-video bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
-        {candidate.profilePictureUrl ? (
+        {imageUrl ? (
           <img
-            src={candidate.profilePictureUrl}
+            src={imageUrl}
             alt={candidate.fullName}
             className="w-full h-full object-cover"
             loading="lazy"
+            onError={(e) => {
+              console.error("Image load error for:", imageUrl);
+              e.target.style.display = "none";
+            }}
           />
         ) : (
           <div className="w-full h-full bg-gray-300 flex items-center justify-center">
