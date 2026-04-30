@@ -30,11 +30,7 @@ export const candidateService = {
       formData.append("yearOfStudy", candidateData.yearOfStudy);
     if (profilePicture) formData.append("profilePicture", profilePicture);
 
-    const response = await api.post("/candidates", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await api.post("/candidates", formData);
     return response.data;
   },
 
@@ -49,11 +45,7 @@ export const candidateService = {
       formData.append("yearOfStudy", candidateData.yearOfStudy);
     if (profilePicture) formData.append("profilePicture", profilePicture);
 
-    const response = await api.patch(`/candidates/${id}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await api.patch(`/candidates/${id}`, formData);
     return response.data;
   },
 

@@ -19,6 +19,12 @@ export const addCandidate = async (req, res) => {
         .json({ error: "Election ID, Position ID, and Full Name are required" });
     }
 
+    // Check if user is authenticated
+    if (!req.user || !req.user.id) {
+      console.error("User not authenticated in addCandidate");
+      return res.status(401).json({ error: "User not authenticated" });
+    }
+
     // Verify position belongs to election
     const positionCheck = await query(
       "SELECT id FROM positions WHERE id = $1 AND election_id = $2",
@@ -76,8 +82,8 @@ export const addCandidate = async (req, res) => {
       candidate,
     });
   } catch (error) {
-    console.error("Add candidate error:", error);
-    res.status(500).json({ error: "Failed to add candidate" });
+    console.error("Add candidate error:", error.message || error);
+    res.status(500).json({ error: "Failed to add candidate", details: error.message });
   }
 };
 
