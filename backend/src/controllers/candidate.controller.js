@@ -2,6 +2,9 @@ import { query } from "../config/db.js";
 
 export const addCandidate = async (req, res) => {
   try {
+    console.log("addCandidate request body:", req.body);
+    console.log("addCandidate file:", req.file ? req.file.filename : "no file");
+    
     const {
       electionId,
       positionId,
@@ -14,6 +17,7 @@ export const addCandidate = async (req, res) => {
 
     // Validate required fields
     if (!electionId || !positionId || !fullName) {
+      console.warn("Missing required fields:", { electionId, positionId, fullName });
       return res
         .status(400)
         .json({ error: "Election ID, Position ID, and Full Name are required" });
@@ -25,13 +29,18 @@ export const addCandidate = async (req, res) => {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
+    console.log("Adding candidate for election:", electionId, "position:", positionId);
+
     // Verify position belongs to election
     const positionCheck = await query(
       "SELECT id FROM positions WHERE id = $1 AND election_id = $2",
       [positionId, electionId]
     );
 
+    console.log("Position check result:", positionCheck.rows);
+
     if (positionCheck.rows.length === 0) {
+      console.warn("Position not found for this election:", { positionId, electionId });
       return res
         .status(400)
         .json({ error: "Invalid position for this election" });
@@ -82,8 +91,13 @@ export const addCandidate = async (req, res) => {
       candidate,
     });
   } catch (error) {
-    console.error("Add candidate error:", error.message || error);
-    res.status(500).json({ error: "Failed to add candidate", details: error.message });
+    console.error("Add candidate error:", error);
+    console.error("Error stack:", error.stack);
+    res.status(500).json({ 
+      error: "Failed to add candidate", 
+      details: error.message,
+      code: error.code 
+    });
   }
 };
 
