@@ -9,41 +9,43 @@ const PositionSection = memo(({
   showResults = false,
 }) => {
   // Determine grid columns based on number of candidates
+  // Mobile first approach - aggressive responsive design
   const getCandidateGridClass = () => {
     const count = candidates?.length || 0;
     
-    // Mobile first approach
+    // All single column on mobile, expand on larger screens
     if (count === 1) return "grid-cols-1";
-    if (count === 2) return "grid-cols-1 sm:grid-cols-2";
+    if (count === 2) return "grid-cols-1 md:grid-cols-2";
     if (count === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
     if (count === 4) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
-    if (count >= 5) return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5";
+    if (count === 5) return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5";
     
-    return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+    // 6+ candidates
+    return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5";
   };
 
   return (
-    <div className="bg-white rounded-lg p-4 sm:p-6 shadow-md mb-8">
+    <div className="bg-white rounded-lg p-3 sm:p-4 md:p-6 shadow-md mb-6 sm:mb-8">
       {/* Position Header */}
-      <div className="mb-6 pb-4 border-b-2 border-yellow-500">
-        <h2 className="text-2xl font-bold text-navy-900">{position.name}</h2>
+      <div className="mb-4 sm:mb-6 pb-3 sm:pb-4 border-b-2 border-yellow-500">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-navy-900">{position.name}</h2>
         {position.description && (
-          <p className="text-gray-600 text-sm mt-1">{position.description}</p>
+          <p className="text-xs sm:text-sm text-gray-600 mt-1">{position.description}</p>
         )}
       </div>
 
       {/* Vote Info */}
       {showResults && (
-        <div className="mb-6 p-3 bg-yellow-50 rounded-lg">
-          <p className="text-sm text-gray-700">
+        <div className="mb-4 sm:mb-6 p-2 sm:p-3 bg-yellow-50 rounded-lg">
+          <p className="text-xs sm:text-sm text-gray-700">
             Total votes: <span className="font-bold">{position.totalVotes}</span>
           </p>
         </div>
       )}
 
-      {/* Candidates Grid - Responsive columns */}
+      {/* Candidates Grid - Aggressive mobile responsiveness */}
       {candidates && candidates.length > 0 ? (
-        <div className={`grid ${getCandidateGridClass()} gap-3 sm:gap-4 auto-rows-max`}>
+        <div className={`grid ${getCandidateGridClass()} gap-2 sm:gap-3 md:gap-4 auto-rows-max`}>
           {candidates.map((candidate) => (
             <CandidateCard
               key={candidate.id}
@@ -59,8 +61,8 @@ const PositionSection = memo(({
           ))}
         </div>
       ) : (
-        <div className="text-center py-8">
-          <p className="text-gray-500">No candidates for this position yet.</p>
+        <div className="text-center py-6 sm:py-8">
+          <p className="text-sm sm:text-base text-gray-500">No candidates for this position yet.</p>
         </div>
       )}
     </div>
