@@ -87,7 +87,15 @@ export const register = async (req, res) => {
     );
 
     if (!emailResult.success) {
-      console.warn("Email sending failed, but user was created:", emailResult);
+      console.error("Email sending failed:", {
+        error: emailResult.error,
+        emailHost: config.emailHost ? "configured" : "NOT CONFIGURED",
+        emailUser: config.emailUser ? "configured" : "NOT CONFIGURED",
+        emailPass: config.emailPass ? "configured" : "NOT CONFIGURED",
+        emailFrom: config.emailFrom ? "configured" : "NOT CONFIGURED",
+      });
+    } else {
+      console.log("Verification email sent successfully to:", user.email);
     }
 
     res.status(201).json({
