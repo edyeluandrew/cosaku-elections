@@ -21,13 +21,14 @@ const CandidateCard = memo(({
           : "border-gray-200 bg-white hover:border-yellow-300"
       }`}
     >
-      {/* Profile Picture - Full width, responsive height */}
-      <div className="mb-2 sm:mb-3 md:mb-4 w-full bg-gray-200 rounded-md overflow-hidden flex-shrink-0 aspect-square sm:aspect-video">
+      {/* Profile Picture - Full width, responsive height, flexible aspect */}
+      <div className="mb-2 sm:mb-3 md:mb-4 w-full bg-gray-200 rounded-md overflow-hidden flex-shrink-0 aspect-auto">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={candidate.fullName}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-top"
+            style={{ maxHeight: "280px" }}
             loading="lazy"
             decoding="async"
             onError={(e) => {
@@ -37,7 +38,7 @@ const CandidateCard = memo(({
             }}
           />
         ) : (
-          <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+          <div className="w-full h-full bg-gray-300 flex items-center justify-center min-h-[200px]">
             <span className="text-gray-500 text-xs sm:text-sm">No Image</span>
           </div>
         )}
