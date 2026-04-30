@@ -78,25 +78,27 @@ export const register = async (req, res) => {
     // Generate verification link
     const verificationLink = `${config.clientUrl}/verify-email?token=${verificationToken}`;
 
-    // Send verification email
-    const emailResult = await sendVerificationEmail(
+    // Send verification email (non-blocking)
+    sendVerificationEmail(
       user.email,
       user.full_name,
       verificationToken,
       verificationLink
-    );
-
-    if (!emailResult.success) {
-      console.error("Email sending failed:", {
-        error: emailResult.error,
-        emailHost: config.emailHost ? "configured" : "NOT CONFIGURED",
-        emailUser: config.emailUser ? "configured" : "NOT CONFIGURED",
-        emailPass: config.emailPass ? "configured" : "NOT CONFIGURED",
-        emailFrom: config.emailFrom ? "configured" : "NOT CONFIGURED",
-      });
-    } else {
-      console.log("Verification email sent successfully to:", user.email);
-    }
+    ).then((emailResult) => {
+      if (emailResult.success) {
+        console.log("Verification email sent successfully to:", user.email);
+      } else {
+        console.error("Email sending failed:", {
+          error: emailResult.error,
+          emailHost: config.emailHost ? "configured" : "NOT CONFIGURED",
+          emailUser: config.emailUser ? "configured" : "NOT CONFIGURED",
+          emailPass: config.emailPass ? "configured" : "NOT CONFIGURED",
+          emailFrom: config.emailFrom ? "configured" : "NOT CONFIGURED",
+        });
+      }
+    }).catch((err) => {
+      console.error("Email send error:", err);
+    });
 
     res.status(201).json({
       message: "Registration successful. Please verify your email.",
