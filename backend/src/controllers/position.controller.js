@@ -1,4 +1,5 @@
 import { query } from "../config/db.js";
+import { logAudit } from "../utils/auditLog.js";
 
 export const createPosition = async (req, res) => {
   try {
@@ -31,24 +32,16 @@ export const createPosition = async (req, res) => {
 
     const position = result.rows[0];
 
-    // Log audit (non-blocking - don't fail if user doesn't exist)
-    try {
-      await query(
-        `INSERT INTO audit_logs (actor_id, action, details)
-         VALUES ($1, $2, $3)`,
-        [
-          req.user.id,
-          "position_created",
-          JSON.stringify({
-            positionId: position.id,
-            positionName: name,
-            electionId,
-          }),
-        ]
-      );
-    } catch (auditError) {
-      console.warn("Failed to log audit:", auditError.message);
-    }
+    // Log audit
+    await logAudit(
+      req.user?.id,
+      "position_created",
+      {
+        positionId: position.id,
+        positionName: name,
+        electionId,
+      }
+    );
 
     res.status(201).json({
       message: "Position created successfully",
@@ -111,23 +104,15 @@ export const updatePosition = async (req, res) => {
       return res.status(404).json({ error: "Position not found" });
     }
 
-    // Log audit (non-blocking - don't fail if user doesn't exist)
-    try {
-      await query(
-        `INSERT INTO audit_logs (actor_id, action, details)
-         VALUES ($1, $2, $3)`,
-        [
-          req.user.id,
-          "position_updated",
-          JSON.stringify({
-            positionId: id,
-            updates: { name, description, displayOrder },
-          }),
-        ]
-      );
-    } catch (auditError) {
-      console.warn("Failed to log audit:", auditError.message);
-    }
+    // Log audit
+    await logAudit(
+      req.user?.id,
+      "position_updated",
+      {
+        positionId: id,
+        updates: { name, description, displayOrder },
+      }
+    );
 
     res.json({
       message: "Position updated successfully",
@@ -164,23 +149,15 @@ export const deletePosition = async (req, res) => {
       return res.status(404).json({ error: "Position not found" });
     }
 
-    // Log audit (non-blocking - don't fail if user doesn't exist)
-    try {
-      await query(
-        `INSERT INTO audit_logs (actor_id, action, details)
-         VALUES ($1, $2, $3)`,
-        [
-          req.user.id,
-          "position_deleted",
-          JSON.stringify({
-            positionId: id,
-            positionName: result.rows[0].name,
-          }),
-        ]
-      );
-    } catch (auditError) {
-      console.warn("Failed to log audit:", auditError.message);
-    }
+    // Log audit
+    await logAudit(
+      req.user?.id,
+      "position_deleted",
+      {
+        positionId: id,
+        positionName: result.rows[0].name,
+      }
+    );
 
     res.json({
       message: "Position deleted successfully",
