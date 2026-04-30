@@ -130,15 +130,3 @@ export const sendResendVerificationEmail = async (
 ) => {
   return sendVerificationEmail(email, fullName, null, verificationLink);
 };
-};
-
-export const testEmailConnection = async () => {
-  try {
-    await transporter.verify();
-    console.log("Email service connected successfully");
-    return true;
-  } catch (error) {
-    console.error("Email service error:", error);
-    return false;
-  }
-};
