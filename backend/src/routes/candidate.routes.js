@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 import {
   addCandidate,
   getCandidates,
@@ -12,6 +13,12 @@ import { authMiddleware } from "../middleware/auth.middleware.js";
 import { adminMiddleware } from "../middleware/admin.middleware.js";
 
 const router = express.Router();
+
+// Ensure uploads directory exists
+const uploadsDir = "src/uploads";
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
