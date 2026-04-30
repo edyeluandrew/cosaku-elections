@@ -31,9 +31,9 @@ export const addCandidate = async (req, res) => {
 
     console.log("Adding candidate for election:", electionId, "position:", positionId);
 
-    // Verify position belongs to election
+    // Verify position belongs to election - accept both UUID and position name
     const positionCheck = await query(
-      "SELECT id FROM positions WHERE id = $1 AND election_id = $2",
+      "SELECT id FROM positions WHERE (id::text = $1 OR full_name = $1) AND election_id = $2",
       [positionId, electionId]
     );
 
@@ -45,6 +45,9 @@ export const addCandidate = async (req, res) => {
         .status(400)
         .json({ error: "Invalid position for this election" });
     }
+
+    // Get the actual position ID (in case it was looked up by name)
+    const actualPositionId = positionCheck.rows[0].id;
 
     // Handle profile picture if uploaded
     let profilePictureUrl = null;
@@ -60,7 +63,7 @@ export const addCandidate = async (req, res) => {
        RETURNING id, election_id, position_id, full_name, program, profile_picture_url, slogan, manifesto, year_of_study, created_at`,
       [
         electionId,
-        positionId,
+        actualPositionId,
         fullName,
         program,
         profilePictureUrl,
