@@ -48,6 +48,18 @@ const AdminSidebar = ({ onClose }) => {
         </Link>
 
         <Link
+          to="/admin/positions"
+          onClick={handleLinkClick}
+          className={`block px-4 py-2 rounded transition ${
+            isActive("/admin/positions")
+              ? "bg-yellow-500 text-navy-900 font-semibold"
+              : "hover:bg-navy-800"
+          }`}
+        >
+          Manage Positions
+        </Link>
+
+        <Link
           to="/admin/voters"
           onClick={handleLinkClick}
           className={`block px-4 py-2 rounded transition ${

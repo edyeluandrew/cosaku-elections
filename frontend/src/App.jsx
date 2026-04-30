@@ -18,6 +18,7 @@ const ResultsPage = React.lazy(() => import("./pages/ResultsPage"));
 // Admin Pages - Lazy loaded
 const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
 const ManageCandidates = React.lazy(() => import("./pages/ManageCandidates"));
+const ManagePositions = React.lazy(() => import("./pages/ManagePositions"));
 const ManageVoters = React.lazy(() => import("./pages/ManageVoters"));
 const ManageVotes = React.lazy(() => import("./pages/ManageVotes"));
 const ElectionControl = React.lazy(() => import("./pages/ElectionControl"));
@@ -117,6 +118,16 @@ function App() {
             <Suspense fallback={<LoadingFallback />}>
               <ProtectedRoute requiredRole="admin">
                 <ManageCandidates />
+              </ProtectedRoute>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/admin/positions"
+          element={
+            <Suspense fallback={<LoadingFallback />}>
+              <ProtectedRoute requiredRole="admin">
+                <ManagePositions />
               </ProtectedRoute>
             </Suspense>
           }

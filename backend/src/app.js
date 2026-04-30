@@ -9,6 +9,7 @@ import voteRoutes from "./routes/vote.routes.js";
 import resultsRoutes from "./routes/results.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import electionRoutes from "./routes/election.routes.js";
+import positionRoutes from "./routes/position.routes.js";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/api/vote", voteRoutes);
 app.use("/api/results", resultsRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/elections", electionRoutes);
+app.use("/api/positions", positionRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
