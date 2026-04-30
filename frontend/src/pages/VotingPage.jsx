@@ -92,17 +92,17 @@ const VotingPage = () => {
 
   return (
     <VoterLayout>
-      <div className="space-y-6 sm:space-y-8">
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-navy-900 mb-2">Cast Your Votes</h1>
-          <p className="text-xs sm:text-base text-gray-600">
+      <div className="space-y-4 sm:space-y-6 md:space-y-8">
+        <div className="bg-white rounded-lg shadow p-3 sm:p-4 md:p-6 lg:p-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-navy-900 mb-2">Cast Your Votes</h1>
+          <p className="text-xs sm:text-sm md:text-base text-gray-600">
             {election?.title} — Select one candidate for each position. You'll
             review your selections before they are submitted.
           </p>
         </div>
 
         {message && (
-          <div className="p-4 rounded-lg bg-yellow-50 text-yellow-800 border border-yellow-200 text-sm sm:text-base">
+          <div className="p-3 sm:p-4 md:p-6 rounded-lg bg-yellow-50 text-yellow-800 border border-yellow-200 text-xs sm:text-sm md:text-base">
             {message}
           </div>
         )}

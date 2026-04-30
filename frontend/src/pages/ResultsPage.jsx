@@ -55,19 +55,19 @@ const ResultsPage = () => {
 
   return (
     <VoterLayout>
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8 md:space-y-10">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow p-6 flex justify-between items-center">
+        <div className="bg-white rounded-lg shadow p-3 sm:p-4 md:p-6 lg:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
           <div>
-            <h1 className="text-3xl font-bold text-navy-900 mb-2">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-navy-900 mb-2">
               Election Results
             </h1>
-            <p className="text-gray-600">Live results are updating in real-time</p>
+            <p className="text-xs sm:text-sm md:text-base text-gray-600">Live results are updating in real-time</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 text-xs sm:text-sm">
             <button
               onClick={() => setChartType("bar")}
-              className={`px-4 py-2 rounded font-semibold transition ${
+              className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded font-semibold transition ${
                 chartType === "bar"
                   ? "bg-yellow-500 text-navy-900"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -77,7 +77,7 @@ const ResultsPage = () => {
             </button>
             <button
               onClick={() => setChartType("pie")}
-              className={`px-4 py-2 rounded font-semibold transition ${
+              className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded font-semibold transition ${
                 chartType === "pie"
                   ? "bg-yellow-500 text-navy-900"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -90,13 +90,13 @@ const ResultsPage = () => {
 
         {/* Results */}
         {results.map((position) => (
-          <div key={position.id} className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-navy-900 mb-6">
+          <div key={position.id} className="bg-white rounded-lg shadow p-3 sm:p-4 md:p-6 lg:p-8">
+            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-navy-900 mb-4 sm:mb-6 md:mb-8">
               {position.name}
             </h2>
 
             {/* Chart */}
-            <div className="mb-8 bg-gray-50 p-4 rounded-lg">
+            <div className="mb-6 sm:mb-8 md:mb-10 bg-gray-50 p-3 sm:p-4 md:p-6 rounded-lg">
               <ResultChart position={position} type={chartType} />
             </div>
 
