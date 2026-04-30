@@ -1,5 +1,11 @@
 import { query } from "../config/db.js";
 import { logAudit } from "../utils/auditLog.js";
+import { optimizeImage } from "../utils/imageOptimization.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const addCandidate = async (req, res) => {
   try {
@@ -53,9 +59,17 @@ export const addCandidate = async (req, res) => {
     // Handle profile picture if uploaded
     let profilePictureUrl = null;
     if (req.file) {
-      profilePictureUrl = `/uploads/${req.file.filename}`;
       console.log("✓ Image file received:", req.file.filename);
-      console.log("✓ Image URL:", profilePictureUrl);
+      
+      // Optimize the image for faster loading
+      const uploadsDir = path.join(__dirname, "../uploads");
+      const imageOptInfo = await optimizeImage(
+        req.file.path,
+        uploadsDir
+      );
+      
+      profilePictureUrl = `/uploads/${imageOptInfo.filename}`;
+      console.log("✓ Image optimized and URL set:", profilePictureUrl);
     } else {
       console.log("⚠️ No image file uploaded");
     }
@@ -232,7 +246,15 @@ export const updateCandidate = async (req, res) => {
     // Handle profile picture update
     let profilePictureUrl = currentCandidate.profile_picture_url;
     if (req.file) {
-      profilePictureUrl = `/uploads/${req.file.filename}`;
+      // Optimize the new image for faster loading
+      const uploadsDir = path.join(__dirname, "../uploads");
+      const imageOptInfo = await optimizeImage(
+        req.file.path,
+        uploadsDir
+      );
+      
+      profilePictureUrl = `/uploads/${imageOptInfo.filename}`;
+      console.log("✓ Image optimized for update:", profilePictureUrl);
     }
 
     // Update candidate

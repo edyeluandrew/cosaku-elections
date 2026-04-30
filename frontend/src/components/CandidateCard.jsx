@@ -28,9 +28,11 @@ const CandidateCard = memo(({
             alt={candidate.fullName}
             className="w-full h-full object-cover"
             loading="lazy"
+            decoding="async"
             onError={(e) => {
               console.error("Image load error for:", imageUrl);
               e.target.style.display = "none";
+              e.target.parentElement.innerHTML = '<div class="w-full h-full bg-gray-300 flex items-center justify-center"><span class="text-gray-500 text-xs sm:text-sm">Image failed to load</span></div>';
             }}
           />
         ) : (
