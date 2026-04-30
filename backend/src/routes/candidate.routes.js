@@ -22,16 +22,22 @@ const __dirname = path.dirname(__filename);
 const uploadsDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log("✓ Created uploads directory:", uploadsDir);
+} else {
+  console.log("✓ Uploads directory exists:", uploadsDir);
 }
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    console.log("📁 Saving file to:", uploadsDir);
     cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
     const timestamp = Date.now();
-    cb(null, `${timestamp}-${file.originalname}`);
+    const filename = `${timestamp}-${file.originalname}`;
+    console.log("📸 Filename generated:", filename);
+    cb(null, filename);
   },
 });
 

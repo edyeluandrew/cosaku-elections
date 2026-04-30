@@ -53,6 +53,10 @@ export const addCandidate = async (req, res) => {
     let profilePictureUrl = null;
     if (req.file) {
       profilePictureUrl = `/uploads/${req.file.filename}`;
+      console.log("✓ Image file received:", req.file.filename);
+      console.log("✓ Image URL:", profilePictureUrl);
+    } else {
+      console.log("⚠️ No image file uploaded");
     }
 
     // Insert candidate
