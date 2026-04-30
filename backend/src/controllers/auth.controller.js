@@ -90,10 +90,9 @@ export const register = async (req, res) => {
       } else {
         console.error("Email sending failed:", {
           error: emailResult.error,
-          emailHost: config.emailHost ? "configured" : "NOT CONFIGURED",
-          emailUser: config.emailUser ? "configured" : "NOT CONFIGURED",
-          emailPass: config.emailPass ? "configured" : "NOT CONFIGURED",
+          brevoApiKey: config.brevoApiKey ? "configured" : "NOT CONFIGURED",
           emailFrom: config.emailFrom ? "configured" : "NOT CONFIGURED",
+          emailFromName: config.emailFromName ? "configured" : "NOT CONFIGURED",
         });
       }
     }).catch((err) => {
