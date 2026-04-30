@@ -33,7 +33,7 @@ export const addCandidate = async (req, res) => {
 
     // Verify position belongs to election - accept both UUID and position name
     const positionCheck = await query(
-      "SELECT id FROM positions WHERE (id::text = $1 OR full_name = $1) AND election_id = $2",
+      "SELECT id FROM positions WHERE (id::text = $1 OR name = $1) AND election_id = $2",
       [positionId, electionId]
     );
 
