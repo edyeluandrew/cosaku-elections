@@ -17,10 +17,8 @@ export const config = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
   clientUrl: clientUrls[0],
   clientUrls,
-  // Email configuration - using Brevo API
-  brevoApiKey: process.env.BREVO_API_KEY,
-  emailFrom: process.env.EMAIL_FROM || "noreply@cosaku.com",
-  emailFromName: process.env.EMAIL_FROM_NAME || "COSAKU Votes",
+  // Brevo API configuration - do not expose API key in logs
+  emailProvider: process.env.EMAIL_PROVIDER || "brevo",
   uploadDir: process.env.UPLOAD_DIR || "src/uploads",
   defaultAdminName: process.env.DEFAULT_ADMIN_NAME,
   defaultAdminEmail: process.env.DEFAULT_ADMIN_EMAIL,

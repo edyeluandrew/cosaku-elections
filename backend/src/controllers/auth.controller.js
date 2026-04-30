@@ -86,17 +86,12 @@ export const register = async (req, res) => {
       verificationLink
     ).then((emailResult) => {
       if (emailResult.success) {
-        console.log("Verification email sent successfully to:", user.email);
+        console.log("✓ Verification email sent to:", user.email);
       } else {
-        console.error("Email sending failed:", {
-          error: emailResult.error,
-          brevoApiKey: config.brevoApiKey ? "configured" : "NOT CONFIGURED",
-          emailFrom: config.emailFrom ? "configured" : "NOT CONFIGURED",
-          emailFromName: config.emailFromName ? "configured" : "NOT CONFIGURED",
-        });
+        console.error("✗ Email sending failed:", emailResult.error);
       }
     }).catch((err) => {
-      console.error("Email send error:", err);
+      console.error("✗ Email send error:", err.message);
     });
 
     res.status(201).json({
