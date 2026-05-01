@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout";
 import adminService from "../utils/adminService";
 import electionService from "../utils/electionService";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [electionId, setElectionId] = useState(null);
+  const [newElectionTitle, setNewElectionTitle] = useState("");
+  const [creatingElection, setCreatingElection] = useState(false);
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -31,6 +35,26 @@ const AdminDashboard = () => {
 
     fetchDashboard();
   }, []);
+
+  const handleCreateNewElection = async (e) => {
+    e.preventDefault();
+    if (!newElectionTitle.trim()) {
+      alert("Please enter an election title");
+      return;
+    }
+
+    setCreatingElection(true);
+    try {
+      await adminService.createElection(newElectionTitle);
+      setNewElectionTitle("");
+      // Refresh dashboard
+      window.location.reload();
+    } catch (error) {
+      alert(error.response?.data?.error || "Failed to create election");
+    } finally {
+      setCreatingElection(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -146,6 +170,43 @@ const AdminDashboard = () => {
                   Publish Results
                 </button>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Create New Election Section */}
+        {(election?.status === 'closed' || election?.status === 'published') && (
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg shadow border-2 border-green-200 p-6">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-green-900 mb-2">✓ Election Complete</h2>
+              <p className="text-green-700">
+                The current election "{election?.title}" has been {election?.status}. 
+                {election?.status === 'published' && ' Results are now available to all voters.'}
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-4 border border-green-300">
+              <h3 className="text-lg font-bold text-navy-900 mb-4">Create New Election</h3>
+              <form onSubmit={handleCreateNewElection} className="flex gap-3 flex-col sm:flex-row">
+                <input
+                  type="text"
+                  placeholder="Enter election title (e.g., COSAKU 2025-2026)"
+                  value={newElectionTitle}
+                  onChange={(e) => setNewElectionTitle(e.target.value)}
+                  disabled={creatingElection}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                <button
+                  type="submit"
+                  disabled={creatingElection || !newElectionTitle.trim()}
+                  className="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                  {creatingElection ? "Creating..." : "Create Election"}
+                </button>
+              </form>
+              <p className="text-xs text-gray-600 mt-3">
+                A new election will be created in draft status. You can then add positions, candidates, and voters before starting it.
+              </p>
             </div>
           </div>
         )}
