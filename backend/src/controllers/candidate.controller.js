@@ -169,11 +169,13 @@ export const getCandidatesByPosition = async (req, res) => {
 
       candidatesByPosition[positionId].candidates.push({
         id: candidate.id,
+        position_id: candidate.position_id,
         fullName: candidate.full_name,
         program: candidate.program,
         slogan: candidate.slogan,
         manifesto: candidate.manifesto,
         yearOfStudy: candidate.year_of_study,
+        position_name: candidate.position_name,
       });
     });
 

@@ -11,6 +11,7 @@ const ManageCandidates = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
+  const [editing, setEditing] = useState(null);
   const [formData, setFormData] = useState({
     electionId: "",
     positionId: "",
@@ -33,6 +34,16 @@ const ManageCandidates = () => {
           // Load positions for this election
           const positionsList = await positionService.getPositions(activeElection.id);
           setPositions(positionsList);
+
+          // Load candidates for this election
+          const candidateData = await candidateService.getCandidatesByPosition(activeElection.id);
+          const allCandidates = [];
+          if (candidateData.positions) {
+            candidateData.positions.forEach(position => {
+              allCandidates.push(...position.candidates);
+            });
+          }
+          setCandidates(allCandidates);
         }
       } catch (error) {
         setMessage(error.response?.data?.error || "Failed to load election data");
@@ -49,6 +60,32 @@ const ManageCandidates = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const openEdit = (candidate) => {
+    setEditing(candidate);
+    setFormData({
+      electionId: election.id,
+      positionId: candidate.position_id,
+      fullName: candidate.fullName,
+      program: candidate.program,
+      slogan: candidate.slogan,
+      manifesto: candidate.manifesto,
+      yearOfStudy: candidate.yearOfStudy,
+    });
+  };
+
+  const closeEdit = () => {
+    setEditing(null);
+    setFormData({
+      electionId: election?.id || "",
+      positionId: "",
+      fullName: "",
+      program: "",
+      slogan: "",
+      manifesto: "",
+      yearOfStudy: "",
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -61,8 +98,27 @@ const ManageCandidates = () => {
         return;
       }
 
-      await candidateService.addCandidate(formData);
-      setMessage("✓ Candidate added successfully!");
+      if (editing) {
+        // Update existing candidate
+        await candidateService.updateCandidate(editing.id, formData);
+        setMessage("✓ Candidate updated successfully!");
+      } else {
+        // Add new candidate
+        await candidateService.addCandidate(formData);
+        setMessage("✓ Candidate added successfully!");
+      }
+
+      // Reload candidates
+      const candidateData = await candidateService.getCandidatesByPosition(election.id);
+      const allCandidates = [];
+      if (candidateData.positions) {
+        candidateData.positions.forEach(position => {
+          allCandidates.push(...position.candidates);
+        });
+      }
+      setCandidates(allCandidates);
+
+      closeEdit();
       setFormData({
         electionId: election?.id || "",
         positionId: "",
@@ -73,9 +129,35 @@ const ManageCandidates = () => {
         yearOfStudy: "",
       });
     } catch (error) {
-      const errorMsg = error.response?.data?.error || error.response?.data?.details || "Failed to add candidate";
+      const errorMsg = error.response?.data?.error || error.response?.data?.details || "Failed to save candidate";
       setMessage(errorMsg);
       console.error("Error details:", error.response?.data);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (candidateId) => {
+    if (!window.confirm("Are you sure you want to delete this candidate?")) {
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await candidateService.deleteCandidate(candidateId);
+      setMessage("✓ Candidate deleted successfully!");
+
+      // Reload candidates
+      const candidateData = await candidateService.getCandidatesByPosition(election.id);
+      const allCandidates = [];
+      if (candidateData.positions) {
+        candidateData.positions.forEach(position => {
+          allCandidates.push(...position.candidates);
+        });
+      }
+      setCandidates(allCandidates);
+    } catch (error) {
+      setMessage(error.response?.data?.error || "Failed to delete candidate");
     } finally {
       setSubmitting(false);
     }
@@ -122,9 +204,11 @@ const ManageCandidates = () => {
           </div>
         )}
 
-        {/* Add Candidate Form */}
+        {/* Add/Edit Candidate Form */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-2xl font-bold text-navy-900 mb-6">Add New Candidate</h2>
+          <h2 className="text-2xl font-bold text-navy-900 mb-6">
+            {editing ? "Edit Candidate" : "Add New Candidate"}
+          </h2>
           
           {positions.length === 0 ? (
             <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-lg mb-6">
@@ -229,11 +313,68 @@ const ManageCandidates = () => {
                 disabled={submitting}
                 className="w-full bg-yellow-500 text-navy-900 py-2 rounded-lg font-semibold hover:bg-yellow-600 disabled:opacity-50 transition"
               >
-                {submitting ? "Adding..." : "Add Candidate"}
+                {submitting ? (editing ? "Updating..." : "Adding...") : (editing ? "Update Candidate" : "Add Candidate")}
               </button>
+              {editing && (
+                <button
+                  type="button"
+                  onClick={closeEdit}
+                  className="w-full bg-gray-300 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-400 transition"
+                >
+                  Cancel
+                </button>
+              )}
             </form>
           )}
         </div>
+
+        {/* Candidates List */}
+        {candidates.length > 0 && (
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-navy-900">Candidates ({candidates.length})</h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-navy-900 text-white">
+                  <tr>
+                    <th className="text-left py-3 px-4">Name</th>
+                    <th className="text-left py-3 px-4">Course</th>
+                    <th className="text-left py-3 px-4">Slogan</th>
+                    <th className="text-left py-3 px-4">Position</th>
+                    <th className="text-left py-3 px-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {candidates.map((candidate) => (
+                    <tr key={candidate.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="py-3 px-4 font-medium">{candidate.fullName}</td>
+                      <td className="py-3 px-4 text-sm">{candidate.program || "—"}</td>
+                      <td className="py-3 px-4 text-sm italic text-gray-600">
+                        {candidate.slogan ? `"${candidate.slogan}"` : "—"}
+                      </td>
+                      <td className="py-3 px-4 text-sm">{candidate.position_name}</td>
+                      <td className="py-3 px-4 space-x-2 flex">
+                        <button
+                          onClick={() => openEdit(candidate)}
+                          className="text-blue-600 hover:text-blue-700 font-semibold text-sm hover:underline"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(candidate.id)}
+                          className="text-red-600 hover:text-red-700 font-semibold text-sm hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );
