@@ -82,8 +82,7 @@ const VoteReview = () => {
             Review Your Votes
           </h1>
           <p className="text-gray-600">
-            Please confirm your selections. Once submitted, votes cannot be
-            changed (except by an administrator).
+            Please confirm your selections. Once submitted, votes cannot be changed.
           </p>
         </div>
 
