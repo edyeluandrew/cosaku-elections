@@ -12,7 +12,7 @@
    
 3. **Program (PPPP):** Must be one of:
    - `kcs` - Computer Science
-   - `kit` - Information Technology
+   - `bit` - Information Technology
    - `dcs` - Data Science
    - `dit` - Digital IT
    - `kls` - Legal Studies
@@ -34,7 +34,7 @@
 
 ```
 2024akcs0001gf@kab.ac.ug     ✓ Female Computer Science student, 2024
-2023akit5234f@kab.ac.ug      ✓ Female IT student, 2023
+2023abit5234f@kab.ac.ug      ✓ Female IT student, 2023
 2025adcs9999gf@kab.ac.ug     ✓ Female Data Science student, 2025
 2024adrm0100f@kab.ac.ug      ✓ Female Data Resource Management student
 2023akrm2847gf@kab.ac.ug     ✓ Female Resource Management student
