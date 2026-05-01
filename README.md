@@ -195,10 +195,10 @@ cosaku-votes/
    # Client URL
    CLIENT_URL=http://localhost:5173
    
-   # Admin Credentials
-   DEFAULT_ADMIN_NAME=Admin User
-   DEFAULT_ADMIN_EMAIL=admin@example.com
-   DEFAULT_ADMIN_PASSWORD=SecurePass123
+   # Admin Credentials (set in environment variables during deployment)
+   DEFAULT_ADMIN_NAME=your_admin_name
+   DEFAULT_ADMIN_EMAIL=your_admin_email
+   DEFAULT_ADMIN_PASSWORD=your_secure_password
    ```
 
 5. **Initialize database**
