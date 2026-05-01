@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import VoterLayout from "../layouts/VoterLayout";
+import electionService from "../utils/electionService";
 
 const VoteSuccess = () => {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
+  const [election, setElection] = useState(null);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("cosaku_vote_results");
@@ -17,6 +19,17 @@ const VoteSuccess = () => {
     } catch {
       navigate("/voter/dashboard", { replace: true });
     }
+
+    // Fetch election status
+    const fetchElection = async () => {
+      try {
+        const el = await electionService.getActive();
+        setElection(el);
+      } catch (error) {
+        console.error("Failed to fetch election:", error);
+      }
+    };
+    fetchElection();
   }, [navigate]);
 
   if (!data) return null;
@@ -59,19 +72,37 @@ const VoteSuccess = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow p-6 flex flex-wrap gap-3 justify-center">
-          <Link
-            to="/voter/dashboard"
-            className="bg-navy-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-navy-800"
-          >
-            Back to Dashboard
-          </Link>
-          <Link
-            to="/results"
-            className="bg-yellow-500 text-navy-900 px-6 py-3 rounded-lg font-semibold hover:bg-yellow-600"
-          >
-            View Live Results
-          </Link>
+        <div className="space-y-4">
+          {!election?.results_published && (
+            <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+              <p className="text-yellow-800 font-semibold">⏳ Results Coming Soon</p>
+              <p className="text-yellow-700 text-sm mt-1">The admin will publish results after closing the election.</p>
+            </div>
+          )}
+          
+          <div className="bg-white rounded-lg shadow p-6 flex flex-wrap gap-3 justify-center">
+            <Link
+              to="/voter/dashboard"
+              className="bg-navy-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-navy-800"
+            >
+              Back to Dashboard
+            </Link>
+            {election?.results_published ? (
+              <Link
+                to="/results"
+                className="bg-yellow-500 text-navy-900 px-6 py-3 rounded-lg font-semibold hover:bg-yellow-600"
+              >
+                View Live Results
+              </Link>
+            ) : (
+              <button
+                disabled
+                className="bg-gray-300 text-gray-600 px-6 py-3 rounded-lg font-semibold cursor-not-allowed"
+              >
+                View Live Results
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </VoterLayout>

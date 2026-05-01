@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { authService } from "../utils/authService";
 import { validateEmail, validatePassword } from "../utils/validators";
+import voteService from "../utils/voteService";
+import electionService from "../utils/electionService";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -16,6 +18,27 @@ const Register = () => {
   const [serverError, setServerError] = useState("");
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
+  const [hasAlreadyVoted, setHasAlreadyVoted] = useState(false);
+
+  useEffect(() => {
+    // Check if user is already authenticated and has voted
+    const checkVotingStatus = async () => {
+      try {
+        const user = authService.getCurrentUser();
+        if (user) {
+          const el = await electionService.getActive();
+          const votesResponse = await voteService.getMyVotes(el.id);
+          if ((votesResponse.votes || []).length > 0) {
+            setHasAlreadyVoted(true);
+          }
+        }
+      } catch (error) {
+        // Silently fail - user might not be authenticated yet
+        console.log("Checking vote status...");
+      }
+    };
+    checkVotingStatus();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,11 +87,41 @@ const Register = () => {
       setRegisteredEmail(formData.email);
       setRegistrationSuccess(true);
     } catch (error) {
-      setServerError(error.response?.data?.error || "Registration failed");
+      const errorMsg = error.response?.data?.error || "Registration failed";
+      if (errorMsg.includes("already") || errorMsg.includes("exist")) {
+        setServerError("This email is already registered. Please login instead.");
+      } else {
+        setServerError(errorMsg);
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  if (hasAlreadyVoted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-navy-900 to-navy-800 flex items-center justify-center px-4">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8 text-center">
+          <div className="text-blue-500 text-5xl mb-4">ℹ️</div>
+          <h1 className="text-3xl font-bold text-navy-900 mb-6">
+            Already Voted!
+          </h1>
+          <p className="text-gray-700 mb-8 leading-relaxed">
+            You have already submitted your votes in this election. You cannot vote again.
+          </p>
+          <p className="text-gray-600 mb-8">
+            Please go to your dashboard to view your votes or wait for results to be published.
+          </p>
+          <Link
+            to="/voter/dashboard"
+            className="inline-block bg-navy-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-navy-800"
+          >
+            Go to Dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (registrationSuccess) {
     return (
