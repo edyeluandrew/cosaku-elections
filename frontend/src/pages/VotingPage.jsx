@@ -88,6 +88,7 @@ const VotingPage = () => {
         electionId: election.id,
         map: selectedCandidates,
         selections,
+        totalPositions: positions.length,
       })
     );
     navigate("/vote/review");

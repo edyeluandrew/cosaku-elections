@@ -10,6 +10,7 @@ const VoteReview = () => {
   const [pending, setPending] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [isIncomplete, setIsIncomplete] = useState(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem(STORAGE_KEY);
@@ -18,7 +19,14 @@ const VoteReview = () => {
       return;
     }
     try {
-      setPending(JSON.parse(raw));
+      const parsed = JSON.parse(raw);
+      setPending(parsed);
+      // Validate that all positions have been voted for
+      const expectedCount = parsed.totalPositions || 0;
+      const actualCount = (parsed.selections || []).length;
+      if (actualCount !== expectedCount) {
+        setIsIncomplete(true);
+      }
     } catch {
       sessionStorage.removeItem(STORAGE_KEY);
       navigate("/vote", { replace: true });
@@ -85,6 +93,13 @@ const VoteReview = () => {
           </div>
         )}
 
+        {isIncomplete && (
+          <div className="p-4 bg-red-50 text-red-700 border border-red-200 rounded-lg">
+            <p className="font-semibold mb-1">⚠️ Incomplete Votes</p>
+            <p className="text-sm">You have not voted for all positions. Please go back and complete your votes.</p>
+          </div>
+        )}
+
         <div className="bg-white rounded-lg shadow divide-y">
           {pending.selections.map((s) => (
             <div
@@ -115,8 +130,9 @@ const VoteReview = () => {
           </button>
           <button
             onClick={handleConfirm}
-            disabled={submitting}
+            disabled={submitting || isIncomplete}
             className="bg-yellow-500 text-navy-900 px-8 py-3 rounded-lg font-semibold hover:bg-yellow-600 disabled:opacity-50"
+            title={isIncomplete ? "Please vote for all positions before submitting" : ""}
           >
             {submitting ? "Submitting..." : "Confirm & Submit"}
           </button>
