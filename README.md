@@ -63,8 +63,7 @@ COSAKU Votes is a comprehensive voting management system designed specifically f
   - Set election timeline
 
 - **Candidate Management**
-  - Add candidates with profile pictures
-  - Upload candidate manifestos and slogans
+  - Add candidates with manifestos and slogans
   - Organize by position
 
 - **Vote Management**
@@ -97,7 +96,6 @@ COSAKU Votes is a comprehensive voting management system designed specifically f
 | Auth | JWT (JSON Web Tokens) |
 | Password | bcryptjs |
 | Email | Nodemailer |
-| File Upload | Multer |
 | Module System | ES6+ |
 
 ### Frontend
@@ -126,7 +124,6 @@ cosaku-votes/
 │   │   ├── middleware/          # Auth & validation
 │   │   ├── utils/               # Helpers & utilities
 │   │   ├── sockets/             # Socket.IO events
-│   │   ├── uploads/             # Uploaded files
 │   │   ├── app.js               # Express app setup
 │   │   └── server.js            # Server entry point
 │   ├── .env
@@ -266,13 +263,6 @@ cd frontend
 npm run dev
 ```
 
-Then open: `http://localhost:5173`
-
-### Default Admin Account
-
-- **Email**: edyeluandrew@outlook.com
-- **Password**: stellar.onchain
-
 ---
 
 ## 🔌 API Endpoints
@@ -343,7 +333,7 @@ GET    /api/admin/vote-edit-logs             - Vote edit history
 - `id`, `election_id`, `name`, `description`, `display_order`, `created_at`
 
 ### Candidates
-- `id`, `election_id`, `position_id`, `full_name`, `program`, `profile_picture_url`, `slogan`, `manifesto`, `created_at`, `updated_at`
+- `id`, `election_id`, `position_id`, `full_name`, `program`, `slogan`, `manifesto`, `created_at`, `updated_at`
 
 ### Votes
 - `id`, `election_id`, `position_id`, `candidate_id`, `voter_id`, `last_edited_by`, `created_at`, `updated_at`
