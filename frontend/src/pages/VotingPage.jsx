@@ -4,6 +4,7 @@ import VoterLayout from "../layouts/VoterLayout";
 import PositionSection from "../components/PositionSection";
 import candidateService from "../utils/candidateService";
 import electionService from "../utils/electionService";
+import voteService from "../utils/voteService";
 
 const STORAGE_KEY = "cosaku_pending_votes";
 
