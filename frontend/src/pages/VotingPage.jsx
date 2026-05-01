@@ -49,10 +49,14 @@ const VotingPage = () => {
           }
         }
       } catch (error) {
-        setMessage(
-          error.response?.data?.error || "Failed to load election or candidates"
-        );
-        console.error(error);
+        const errorMsg = error.response?.data?.error || error.message || "Failed to load election or candidates";
+        setMessage(errorMsg);
+        console.error("Error loading voting page:", error);
+        console.error("Error details:", {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+        });
       } finally {
         setLoading(false);
       }
