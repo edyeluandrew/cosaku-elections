@@ -61,7 +61,6 @@ export const broadcastResults = async (electionId) => {
           id: row.candidate_id,
           name: row.candidate_name,
           program: row.candidate_program,
-          profilePictureUrl: row.profile_picture_url,
           voteCount: count,
           percentage: t > 0 ? parseFloat(((count / t) * 100).toFixed(2)) : 0,
         });

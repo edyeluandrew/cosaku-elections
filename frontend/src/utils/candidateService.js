@@ -17,35 +17,27 @@ export const candidateService = {
     return response.data;
   },
 
-  addCandidate: async (candidateData, profilePicture) => {
-    const formData = new FormData();
-    formData.append("electionId", candidateData.electionId);
-    formData.append("positionId", candidateData.positionId);
-    formData.append("fullName", candidateData.fullName);
-    formData.append("program", candidateData.program);
-    if (candidateData.slogan) formData.append("slogan", candidateData.slogan);
-    if (candidateData.manifesto)
-      formData.append("manifesto", candidateData.manifesto);
-    if (candidateData.yearOfStudy)
-      formData.append("yearOfStudy", candidateData.yearOfStudy);
-    if (profilePicture) formData.append("profilePicture", profilePicture);
-
-    const response = await api.post("/candidates", formData);
+  addCandidate: async (candidateData) => {
+    const response = await api.post("/candidates", {
+      electionId: candidateData.electionId,
+      positionId: candidateData.positionId,
+      fullName: candidateData.fullName,
+      program: candidateData.program,
+      slogan: candidateData.slogan || null,
+      manifesto: candidateData.manifesto || null,
+      yearOfStudy: candidateData.yearOfStudy || null,
+    });
     return response.data;
   },
 
-  updateCandidate: async (id, candidateData, profilePicture) => {
-    const formData = new FormData();
-    formData.append("fullName", candidateData.fullName);
-    formData.append("program", candidateData.program);
-    if (candidateData.slogan) formData.append("slogan", candidateData.slogan);
-    if (candidateData.manifesto)
-      formData.append("manifesto", candidateData.manifesto);
-    if (candidateData.yearOfStudy)
-      formData.append("yearOfStudy", candidateData.yearOfStudy);
-    if (profilePicture) formData.append("profilePicture", profilePicture);
-
-    const response = await api.patch(`/candidates/${id}`, formData);
+  updateCandidate: async (id, candidateData) => {
+    const response = await api.patch(`/candidates/${id}`, {
+      fullName: candidateData.fullName,
+      program: candidateData.program,
+      slogan: candidateData.slogan || null,
+      manifesto: candidateData.manifesto || null,
+      yearOfStudy: candidateData.yearOfStudy || null,
+    });
     return response.data;
   },
 

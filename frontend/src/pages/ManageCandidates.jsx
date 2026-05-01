@@ -20,7 +20,6 @@ const ManageCandidates = () => {
     manifesto: "",
     yearOfStudy: "",
   });
-  const [profilePicture, setProfilePicture] = useState(null);
 
   // Load election and positions on mount
   useEffect(() => {
@@ -50,10 +49,6 @@ const ManageCandidates = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
-    setProfilePicture(e.target.files[0]);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -66,7 +61,7 @@ const ManageCandidates = () => {
         return;
       }
 
-      await candidateService.addCandidate(formData, profilePicture);
+      await candidateService.addCandidate(formData);
       setMessage("✓ Candidate added successfully!");
       setFormData({
         electionId: election?.id || "",
@@ -77,7 +72,6 @@ const ManageCandidates = () => {
         manifesto: "",
         yearOfStudy: "",
       });
-      setProfilePicture(null);
     } catch (error) {
       const errorMsg = error.response?.data?.error || error.response?.data?.details || "Failed to add candidate";
       setMessage(errorMsg);
@@ -199,18 +193,6 @@ const ManageCandidates = () => {
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                     placeholder="e.g., Year 2"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-navy-900 mb-2">
-                    Profile Picture
-                  </label>
-                  <input
-                    type="file"
-                    onChange={handleFileChange}
-                    accept="image/*"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   />
                 </div>
 

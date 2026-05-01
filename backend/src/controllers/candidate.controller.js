@@ -1,16 +1,9 @@
 import { query } from "../config/db.js";
 import { logAudit } from "../utils/auditLog.js";
-import { optimizeImage } from "../utils/imageOptimization.js";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export const addCandidate = async (req, res) => {
   try {
     console.log("addCandidate request body:", req.body);
-    console.log("addCandidate file:", req.file ? req.file.filename : "no file");
     
     const {
       electionId,
@@ -56,38 +49,17 @@ export const addCandidate = async (req, res) => {
     // Get the actual position ID (in case it was looked up by name)
     const actualPositionId = positionCheck.rows[0].id;
 
-    // Handle profile picture if uploaded
-    let profilePictureUrl = null;
-    if (req.file) {
-      console.log("✓ Image file received:", req.file.filename);
-      console.log("  File path:", req.file.path);
-      
-      // Optimize the image for faster loading
-      const uploadsDir = path.join(__dirname, "../uploads");
-      const imageOptInfo = await optimizeImage(
-        req.file.path,
-        uploadsDir,
-        req.file.filename
-      );
-      
-      profilePictureUrl = `/uploads/${imageOptInfo.filename}`;
-      console.log("✓ Image optimized and URL set:", profilePictureUrl);
-    } else {
-      console.log("⚠️ No image file uploaded");
-    }
-
     // Insert candidate
     const result = await query(
       `INSERT INTO candidates 
-       (election_id, position_id, full_name, program, profile_picture_url, slogan, manifesto, year_of_study)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING id, election_id, position_id, full_name, program, profile_picture_url, slogan, manifesto, year_of_study, created_at`,
+       (election_id, position_id, full_name, program, slogan, manifesto, year_of_study)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, election_id, position_id, full_name, program, slogan, manifesto, year_of_study, created_at`,
       [
         electionId,
         actualPositionId,
         fullName,
         program,
-        profilePictureUrl,
         slogan || null,
         manifesto || null,
         yearOfStudy || null,
@@ -141,7 +113,7 @@ export const getCandidates = async (req, res) => {
     const result = await query(
       `SELECT 
         c.id, c.election_id, c.position_id, c.full_name, c.program, 
-        c.profile_picture_url, c.slogan, c.manifesto, c.year_of_study, 
+        c.slogan, c.manifesto, c.year_of_study, 
         c.created_at, p.name as position_name
        FROM candidates c
        LEFT JOIN positions p ON c.position_id = p.id
@@ -171,7 +143,7 @@ export const getCandidatesByPosition = async (req, res) => {
     const result = await query(
       `SELECT 
         c.id, c.election_id, c.position_id, c.full_name, c.program,
-        c.profile_picture_url, c.slogan, c.manifesto, c.year_of_study,
+        c.slogan, c.manifesto, c.year_of_study,
         p.id as position_id, p.name as position_name, p.display_order
        FROM candidates c
        JOIN positions p ON c.position_id = p.id
@@ -199,7 +171,6 @@ export const getCandidatesByPosition = async (req, res) => {
         id: candidate.id,
         fullName: candidate.full_name,
         program: candidate.program,
-        profilePictureUrl: candidate.profile_picture_url,
         slogan: candidate.slogan,
         manifesto: candidate.manifesto,
         yearOfStudy: candidate.year_of_study,
@@ -243,40 +214,21 @@ export const updateCandidate = async (req, res) => {
       return res.status(404).json({ error: "Candidate not found" });
     }
 
-    const currentCandidate = currentResult.rows[0];
-
-    // Handle profile picture update
-    let profilePictureUrl = currentCandidate.profile_picture_url;
-    if (req.file) {
-      // Optimize the new image for faster loading
-      const uploadsDir = path.join(__dirname, "../uploads");
-      const imageOptInfo = await optimizeImage(
-        req.file.path,
-        uploadsDir,
-        req.file.filename
-      );
-      
-      profilePictureUrl = `/uploads/${imageOptInfo.filename}`;
-      console.log("✓ Image optimized for update:", profilePictureUrl);
-    }
-
     // Update candidate
     const result = await query(
       `UPDATE candidates 
        SET full_name = COALESCE($1, full_name),
            program = COALESCE($2, program),
-           profile_picture_url = COALESCE($3, profile_picture_url),
-           slogan = COALESCE($4, slogan),
-           manifesto = COALESCE($5, manifesto),
-           year_of_study = COALESCE($6, year_of_study),
-           position_id = COALESCE($7, position_id),
+           slogan = COALESCE($3, slogan),
+           manifesto = COALESCE($4, manifesto),
+           year_of_study = COALESCE($5, year_of_study),
+           position_id = COALESCE($6, position_id),
            updated_at = CURRENT_TIMESTAMP
-       WHERE id = $8
-       RETURNING id, election_id, position_id, full_name, program, profile_picture_url, slogan, manifesto, year_of_study, updated_at`,
+       WHERE id = $7
+       RETURNING id, election_id, position_id, full_name, program, slogan, manifesto, year_of_study, updated_at`,
       [
         fullName,
         program,
-        profilePictureUrl,
         slogan,
         manifesto,
         yearOfStudy,

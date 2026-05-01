@@ -17,13 +17,12 @@ export const getLiveResults = async (req, res) => {
         c.id as candidate_id,
         c.full_name as candidate_name,
         c.program as candidate_program,
-        c.profile_picture_url,
         COUNT(v.id) as vote_count
        FROM positions p
        LEFT JOIN candidates c ON p.id = c.position_id
        LEFT JOIN votes v ON c.id = v.candidate_id AND v.election_id = $1
        WHERE p.election_id = $1
-       GROUP BY p.id, p.name, p.display_order, c.id, c.full_name, c.program, c.profile_picture_url
+       GROUP BY p.id, p.name, p.display_order, c.id, c.full_name, c.program
        ORDER BY p.display_order ASC, vote_count DESC`,
       [electionId]
     );
@@ -69,7 +68,6 @@ export const getLiveResults = async (req, res) => {
           id: row.candidate_id,
           name: row.candidate_name,
           program: row.candidate_program,
-          profilePictureUrl: row.profile_picture_url,
           voteCount: parseInt(row.vote_count),
           percentage: parseFloat(percentage),
         });
@@ -118,12 +116,11 @@ export const getResultsByPosition = async (req, res) => {
         c.id as candidate_id,
         c.full_name as candidate_name,
         c.program as candidate_program,
-        c.profile_picture_url,
         COUNT(v.id) as vote_count
        FROM candidates c
        LEFT JOIN votes v ON c.id = v.candidate_id AND v.election_id = $1
        WHERE c.position_id = $2
-       GROUP BY c.id, c.full_name, c.program, c.profile_picture_url
+       GROUP BY c.id, c.full_name, c.program
        ORDER BY vote_count DESC`,
       [electionId, positionId]
     );
@@ -142,7 +139,6 @@ export const getResultsByPosition = async (req, res) => {
       id: row.candidate_id,
       name: row.candidate_name,
       program: row.candidate_program,
-      profilePictureUrl: row.profile_picture_url,
       voteCount: parseInt(row.vote_count),
       percentage:
         totalVotes > 0
@@ -194,13 +190,12 @@ export const getPublishedResults = async (req, res) => {
         c.id as candidate_id,
         c.full_name as candidate_name,
         c.program as candidate_program,
-        c.profile_picture_url,
         COUNT(v.id) as vote_count
        FROM positions p
        LEFT JOIN candidates c ON p.id = c.position_id
        LEFT JOIN votes v ON c.id = v.candidate_id AND v.election_id = $1
        WHERE p.election_id = $1
-       GROUP BY p.id, p.name, p.display_order, c.id, c.full_name, c.program, c.profile_picture_url
+       GROUP BY p.id, p.name, p.display_order, c.id, c.full_name, c.program
        ORDER BY p.display_order ASC, vote_count DESC`,
       [electionId]
     );
@@ -246,7 +241,6 @@ export const getPublishedResults = async (req, res) => {
           id: row.candidate_id,
           name: row.candidate_name,
           program: row.candidate_program,
-          profilePictureUrl: row.profile_picture_url,
           voteCount: parseInt(row.vote_count),
           percentage: parseFloat(percentage),
         });
