@@ -14,12 +14,26 @@ const VotingPage = () => {
   const [selectedCandidates, setSelectedCandidates] = useState({});
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [hasVoted, setHasVoted] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       try {
         const el = await electionService.getActive();
         setElection(el);
+        
+        // Check if voter has already voted
+        const votesResponse = await voteService.getMyVotes(el.id);
+        const votes = votesResponse.votes || [];
+        
+        if (votes.length > 0) {
+          setHasVoted(true);
+          setMessage("You have already submitted your votes and cannot vote again.");
+          // Redirect back to dashboard after a short delay
+          setTimeout(() => navigate("/voter/dashboard", { replace: true }), 2000);
+          return;
+        }
+        
         const response = await candidateService.getCandidatesByPosition(el.id);
         setPositions(response.positions || []);
         // Restore prior selections if any
@@ -44,7 +58,7 @@ const VotingPage = () => {
       }
     };
     load();
-  }, []);
+  }, [navigate]);
 
   const handleSelectCandidate = useCallback((positionId, candidate) => {
     setSelectedCandidates((prev) => ({ ...prev, [positionId]: candidate }));
@@ -85,6 +99,20 @@ const VotingPage = () => {
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading candidates...</p>
+        </div>
+      </VoterLayout>
+    );
+  }
+
+  if (hasVoted) {
+    return (
+      <VoterLayout>
+        <div className="space-y-6">
+          <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg">
+            <h2 className="text-xl font-bold text-red-700 mb-2">Voting Complete</h2>
+            <p className="text-red-800 mb-4">{message}</p>
+            <p className="text-sm text-red-700">Redirecting to dashboard...</p>
+          </div>
         </div>
       </VoterLayout>
     );

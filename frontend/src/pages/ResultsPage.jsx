@@ -11,6 +11,7 @@ const ResultsPage = () => {
   const [loading, setLoading] = useState(true);
   const [chartType, setChartType] = useState("bar");
   const [electionId, setElectionId] = useState(null);
+  const [election, setElection] = useState(null);
 
   useEffect(() => {
     let currentId = null;
@@ -19,6 +20,7 @@ const ResultsPage = () => {
         const el = await electionService.getActive();
         currentId = el.id;
         setElectionId(el.id);
+        setElection(el);
         const response = await resultsService.getLiveResults(el.id);
         setResults(response.results || []);
         socket.emit("join_election", el.id);
@@ -56,13 +58,26 @@ const ResultsPage = () => {
   return (
     <VoterLayout>
       <div className="space-y-6 sm:space-y-8 md:space-y-10">
+        {!election?.results_published && (
+          <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 sm:p-6 rounded-lg">
+            <p className="text-yellow-800 font-semibold text-sm sm:text-base">
+              ⏳ Results are pending admin approval
+            </p>
+            <p className="text-yellow-700 text-xs sm:text-sm mt-1">
+              The election administrator will publish results here once they close the election.
+            </p>
+          </div>
+        )}
+        
         {/* Header */}
         <div className="bg-white rounded-lg shadow p-3 sm:p-4 md:p-6 lg:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
           <div>
             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-navy-900 mb-2">
               Election Results
             </h1>
-            <p className="text-xs sm:text-sm md:text-base text-gray-600">Live results are updating in real-time</p>
+            <p className="text-xs sm:text-sm md:text-base text-gray-600">
+              {election?.results_published ? "Live results are updating in real-time" : "Results will appear here when published"}
+            </p>
           </div>
           <div className="flex gap-2 text-xs sm:text-sm">
             <button

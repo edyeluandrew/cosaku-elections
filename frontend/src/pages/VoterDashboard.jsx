@@ -93,20 +93,53 @@ const VoterDashboard = () => {
         )}
 
         {/* Action Buttons */}
-        <div className="flex gap-4">
-          <Link
-            to="/vote"
-            className="bg-yellow-500 text-navy-900 px-8 py-3 rounded-lg font-semibold hover:bg-yellow-600 transition"
-          >
-            {totalVotes === 0 ? "Start Voting" : "Continue Voting"}
-          </Link>
-          <Link
-            to="/results"
-            className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-          >
-            View Results
-          </Link>
-        </div>
+        {totalVotes > 0 ? (
+          // After voting: show message and only allow results viewing if published
+          <div className="space-y-4">
+            <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded">
+              <p className="text-emerald-800 font-semibold">✓ Your votes have been submitted</p>
+              <p className="text-emerald-700 text-sm mt-1">
+                {election?.results_published
+                  ? "Results are now available below."
+                  : "Results will be available once the admin publishes them."}
+              </p>
+            </div>
+
+            {election?.results_published && (
+              <Link
+                to="/results"
+                className="block text-center bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+              >
+                View Results
+              </Link>
+            )}
+
+            {!election?.results_published && (
+              <button
+                disabled
+                className="w-full bg-gray-300 text-gray-600 px-8 py-3 rounded-lg font-semibold cursor-not-allowed"
+              >
+                Results pending admin approval
+              </button>
+            )}
+          </div>
+        ) : (
+          // Before voting: allow voting button
+          <div className="flex gap-4">
+            <Link
+              to="/vote"
+              className="bg-yellow-500 text-navy-900 px-8 py-3 rounded-lg font-semibold hover:bg-yellow-600 transition"
+            >
+              Start Voting
+            </Link>
+            <Link
+              to="/results"
+              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              View Results
+            </Link>
+          </div>
+        )}
       </div>
     </VoterLayout>
   );
