@@ -4,6 +4,7 @@ import PositionSection from "../components/PositionSection";
 import ResultChart from "../components/ResultChart";
 import resultsService from "../utils/resultsService";
 import electionService from "../utils/electionService";
+import { downloadChart } from "../utils/chartDownloader";
 import socket from "../sockets/socket";
 
 const ResultsPage = () => {
@@ -112,7 +113,20 @@ const ResultsPage = () => {
 
             {/* Chart */}
             <div className="mb-6 sm:mb-8 md:mb-10 bg-gray-50 p-3 sm:p-4 md:p-6 rounded-lg">
-              <ResultChart position={position} type={chartType} />
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-sm font-semibold text-gray-700">
+                  {chartType === "pie" ? "Pie Chart" : "Bar Chart"}
+                </h3>
+                <button
+                  onClick={() => downloadChart(`chart-${position.id}`, `${position.name}-results`)}
+                  className="flex items-center gap-2 px-3 py-2 text-xs sm:text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition font-semibold"
+                >
+                  ⬇️ Download Chart
+                </button>
+              </div>
+              <div id={`chart-${position.id}`}>
+                <ResultChart position={position} type={chartType} />
+              </div>
             </div>
 
             {/* Results Table */}

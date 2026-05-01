@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import AdminLayout from "../layouts/AdminLayout";
 import ResultChart from "../components/ResultChart";
+import { downloadChart } from "../utils/chartDownloader";
 import resultsService from "../utils/resultsService";
 import electionService from "../utils/electionService";
 import socket from "../sockets/socket";
@@ -105,8 +106,23 @@ const LiveResults = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-              <div className="bg-gray-50 p-3 sm:p-4 rounded-lg overflow-x-auto">
-                <ResultChart position={position} type={chartType} />
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-sm font-semibold text-gray-700">
+                    {chartType === "pie" ? "Pie Chart" : "Bar Chart"}
+                  </h3>
+                  <button
+                    onClick={() => downloadChart(`chart-${position.id}`, `${position.name}-results`)}
+                    className="flex items-center gap-2 px-3 py-2 text-xs sm:text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition font-semibold"
+                  >
+                    ⬇️ Download
+                  </button>
+                </div>
+                <div className="bg-gray-50 p-3 sm:p-4 rounded-lg overflow-x-auto">
+                  <div id={`chart-${position.id}`}>
+                    <ResultChart position={position} type={chartType} />
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-2">
