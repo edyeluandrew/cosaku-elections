@@ -1,6 +1,6 @@
 // Kabale University email validation regex
 const KAB_EMAIL_REGEX =
-  /^(2023|2024|2025)a(kcs|bit|dcs|dit|kls|krm|drm|dls)\d{3,4}(gf|f)@kab\.ac\.ug$/i;
+  /^(2023|2024|2025)a(kcs|bit|kit|dcs|dit|kls|krm|drm|dls)\d{1,4}(gf|f)@kab\.ac\.ug$/i;
 
 export const isValidKabEmail = (email) => {
   if (!email || typeof email !== "string") return false;
