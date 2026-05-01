@@ -10,7 +10,9 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
  */
 export const getBaseApiUrl = () => {
   const baseUrl = API_URL.replace(/\/api\/?$/, "");
-  return baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+  const cleaned = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+  console.log("📍 Base API URL:", cleaned);
+  return cleaned;
 };
 
 /**
@@ -25,16 +27,24 @@ export const resolveImageUrl = (imageUrl) => {
 
   // If it's already an absolute URL, return as-is
   if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+    console.log("✓ Already absolute URL:", imageUrl);
     return imageUrl;
   }
 
+  // Get base API URL
+  const baseUrl = getBaseApiUrl();
+
   // If it's a relative path, prepend the base API URL
   if (imageUrl.startsWith("/")) {
-    return `${getBaseApiUrl()}${imageUrl}`;
+    const resolved = `${baseUrl}${imageUrl}`;
+    console.log("✓ Resolved relative URL:", imageUrl, "→", resolved);
+    return resolved;
   }
 
   // Otherwise, treat it as a relative path from the base API URL
-  return `${getBaseApiUrl()}/${imageUrl}`;
+  const resolved = `${baseUrl}/${imageUrl}`;
+  console.log("✓ Resolved path:", imageUrl, "→", resolved);
+  return resolved;
 };
 
 /**
@@ -52,14 +62,12 @@ export const validateImageUrl = async (imageUrl) => {
     const response = await fetch(resolvedUrl, {
       method: "HEAD",
       mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
     });
+    console.log(`✓ Image validation for ${imageUrl}: ${response.ok}`);
     return response.ok;
   } catch (error) {
     console.warn(
-      `Image validation failed for ${imageUrl}:`,
+      `⚠️ Image validation failed for ${imageUrl}:`,
       error.message
     );
     return false;

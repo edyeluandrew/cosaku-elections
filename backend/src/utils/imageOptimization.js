@@ -9,13 +9,20 @@ import path from "path";
  * - Maintain aspect ratio
  * @param {string} inputPath - Full path to uploaded image
  * @param {string} outputDir - Directory to save optimized image
+ * @param {string} suggestedFilename - Suggested filename (e.g., from multer)
  * @returns {Promise<object>} - Object with optimized image info
  */
-export const optimizeImage = async (inputPath, outputDir) => {
+export const optimizeImage = async (inputPath, outputDir, suggestedFilename = null) => {
   try {
+    // Ensure output directory exists
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+      console.log("📁 Created uploads directory:", outputDir);
+    }
+
     // Get file info
-    const filename = path.basename(inputPath);
-    const ext = path.extname(filename).toLowerCase();
+    const originalFilename = suggestedFilename || path.basename(inputPath);
+    const ext = path.extname(originalFilename).toLowerCase();
 
     // Read image to get dimensions
     const metadata = await sharp(inputPath).metadata();
@@ -40,7 +47,7 @@ export const optimizeImage = async (inputPath, outputDir) => {
     }
 
     // Compress based on format
-    const jpegPath = path.join(outputDir, filename.replace(ext, ".jpg"));
+    const jpegPath = path.join(outputDir, originalFilename.replace(ext, ".jpg"));
 
     await pipeline
       .jpeg({ quality: 80, progressive: true, mozjpeg: true })
@@ -57,15 +64,19 @@ export const optimizeImage = async (inputPath, outputDir) => {
     console.log(
       `✓ Image optimized: ${(originalStats.size / 1024).toFixed(2)}KB → ${(stats.size / 1024).toFixed(2)}KB (${compression}% compression)`
     );
+    console.log(`✓ Saved to: ${jpegPath}`);
 
-    // If original was JPG, we can delete it
-    if (ext.toLowerCase() === ".jpg" || ext.toLowerCase() === ".jpeg") {
+    // Clean up original file from multer if it's not the optimized one
+    if (inputPath !== jpegPath && fs.existsSync(inputPath)) {
       fs.unlinkSync(inputPath);
-      console.log("🗑️  Removed original image file");
+      console.log("🗑️  Removed original temporary file");
     }
 
+    const finalFilename = path.basename(jpegPath);
+    console.log(`✓ Final filename: ${finalFilename}`);
+
     return {
-      filename: path.basename(jpegPath),
+      filename: finalFilename,
       size: stats.size,
       width: metadata.width,
       height: metadata.height,
@@ -73,14 +84,32 @@ export const optimizeImage = async (inputPath, outputDir) => {
       compression: `${compression}%`,
     };
   } catch (error) {
-    console.error("Image optimization failed:", error.message);
-    // If optimization fails, fall back to original
-    console.log("⚠️  Optimization failed, using original image");
-    return {
-      filename: path.basename(inputPath),
-      optimized: false,
-      error: error.message,
-    };
+    console.error("❌ Image optimization failed:", error.message);
+    
+    // If optimization fails, try to use the original file if it exists
+    if (fs.existsSync(inputPath)) {
+      const fallbackName = suggestedFilename || path.basename(inputPath);
+      const fallbackPath = path.join(outputDir, fallbackName);
+      
+      try {
+        // Copy the original file to uploads directory if needed
+        if (inputPath !== fallbackPath) {
+          fs.copyFileSync(inputPath, fallbackPath);
+          console.log("✓ Used original image as fallback:", fallbackName);
+        }
+        return {
+          filename: fallbackName,
+          optimized: false,
+          fallback: true,
+          error: error.message,
+        };
+      } catch (copyError) {
+        console.error("❌ Fallback copy failed:", copyError.message);
+        throw error;
+      }
+    }
+    
+    throw error;
   }
 };
 

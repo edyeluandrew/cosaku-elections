@@ -60,12 +60,14 @@ export const addCandidate = async (req, res) => {
     let profilePictureUrl = null;
     if (req.file) {
       console.log("✓ Image file received:", req.file.filename);
+      console.log("  File path:", req.file.path);
       
       // Optimize the image for faster loading
       const uploadsDir = path.join(__dirname, "../uploads");
       const imageOptInfo = await optimizeImage(
         req.file.path,
-        uploadsDir
+        uploadsDir,
+        req.file.filename
       );
       
       profilePictureUrl = `/uploads/${imageOptInfo.filename}`;
@@ -250,7 +252,8 @@ export const updateCandidate = async (req, res) => {
       const uploadsDir = path.join(__dirname, "../uploads");
       const imageOptInfo = await optimizeImage(
         req.file.path,
-        uploadsDir
+        uploadsDir,
+        req.file.filename
       );
       
       profilePictureUrl = `/uploads/${imageOptInfo.filename}`;

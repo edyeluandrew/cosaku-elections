@@ -22,21 +22,28 @@ const CandidateCard = memo(({
       }`}
     >
       {/* Profile Picture - Full width, responsive height, flexible aspect */}
-      <div className="mb-2 sm:mb-3 md:mb-4 w-full bg-gray-200 rounded-md overflow-hidden flex-shrink-0 aspect-auto">
+      <div className="mb-2 sm:mb-3 md:mb-4 w-full bg-gray-200 rounded-md overflow-hidden flex-shrink-0 aspect-auto relative">
         {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={candidate.fullName}
-            className="w-full h-full object-cover object-top"
-            style={{ maxHeight: "280px" }}
-            loading="lazy"
-            decoding="async"
-            onError={(e) => {
-              console.error("Image load error for:", imageUrl);
-              e.target.style.display = "none";
-              e.target.parentElement.innerHTML = '<div class="w-full h-full bg-gray-300 flex items-center justify-center text-center"><span class="text-gray-500 text-xs sm:text-sm p-2">Failed to load</span></div>';
-            }}
-          />
+          <>
+            <img
+              src={imageUrl}
+              alt={candidate.fullName}
+              className="w-full h-full object-cover object-top"
+              style={{ maxHeight: "280px" }}
+              loading="lazy"
+              decoding="async"
+              onLoad={() => {
+                console.log("✓ Image loaded successfully:", imageUrl);
+              }}
+              onError={(e) => {
+                console.error("✗ Image load error for:", imageUrl);
+                console.error("  Candidate:", candidate.fullName);
+                console.error("  Original URL from API:", candidate.profilePictureUrl);
+                e.target.style.display = "none";
+                e.target.parentElement.innerHTML = `<div class="w-full h-full bg-gray-300 flex items-center justify-center text-center min-h-[200px]"><span class="text-gray-500 text-xs sm:text-sm p-2">Failed to load<br/><span class="text-xs">${candidate.profilePictureUrl}</span></span></div>`;
+              }}
+            />
+          </>
         ) : (
           <div className="w-full h-full bg-gray-300 flex items-center justify-center min-h-[200px]">
             <span className="text-gray-500 text-xs sm:text-sm">No Image</span>
