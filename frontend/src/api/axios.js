@@ -1,10 +1,22 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// Determine API URL based on environment
+let API_URL;
+
+if (import.meta.env.VITE_API_URL) {
+  // Use explicit environment variable if set
+  API_URL = import.meta.env.VITE_API_URL;
+} else if (import.meta.env.DEV) {
+  // Development mode: use localhost
+  API_URL = "http://localhost:5000/api";
+} else {
+  // Production mode: use Render backend
+  API_URL = "https://cosaku-elections.onrender.com/api";
+}
 
 console.log("🔌 API Configuration:");
 console.log("   VITE_API_URL:", import.meta.env.VITE_API_URL);
-console.log("   Fallback: http://localhost:5000/api");
+console.log("   Environment:", import.meta.env.DEV ? "development" : "production");
 console.log("   Using API_URL:", API_URL);
 
 const api = axios.create({
